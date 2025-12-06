@@ -26,7 +26,7 @@ namespace excel_workflow.Shared
         protected void GoToNextStep()
         {
             Wiz.ToggleStepDone(Step);
-            Nav.NavigateTo($"/wizare/step/{Step+1}");
+            Nav.NavigateTo($"/wizard/step/{Step+1}");
         }
     }
 }
