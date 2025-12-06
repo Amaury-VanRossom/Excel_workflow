@@ -1,0 +1,24 @@
+﻿@inject CsvParsingService Csv
+@inject WizardState Wiz
+
+<div class="d-flex flex-row align-items-center justify-content-around">
+    <div class="d-flex flex-column align-items-center">
+        <h3>Student list</h3>
+        <p class="w-50 text-center">Select the .csv file with all the students information.</p>
+    </div>
+    <InputFile OnChange="OnInputFileChange" />
+</div>
+@code {
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        await ProcessStudentFile(e.File);
+    }
+
+    private async Task ProcessStudentFile(IBrowserFile file)
+    {
+        Console.WriteLine($"Processing file: {file.Name}");
+        Stream stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
+        Wiz.WizardModel.Students = await Csv.ParseStudents(stream).ToDictionaryAsync(s => s.StudentNumber);
+        }
+    }
+}

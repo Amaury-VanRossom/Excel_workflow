@@ -1,13 +1,33 @@
 ﻿@page "/wizard/step/{step:int}"
 @using excel_workflow.Shared
-@layout MainBox
+@layout CenterLayout
 @inherits WizardStepBase
 
 <PageTitle>Step @Step</PageTitle>
 
 <h2 class="position-relative text-decoration-underline">Step @Step</h2>
-<div class="d-flex flex-row align-items-center justify-content-around">
-</div>
+<MainBox>
+    @switch (Step)
+    {
+        case 1:
+            <Step1Component/>
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+    } 
+</MainBox>
 
 
 @code {

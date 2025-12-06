@@ -1,20 +1,18 @@
 ﻿@page "/"
-@layout MainLayout
+@layout CenterLayout
 @inject NavigationManager Nav
 @inject WizardState Wiz
 
 <PageTitle>Home</PageTitle>
-<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-    <div class="lifted-box bg-white shadow p-2 d-flex flex-column justify-content-center ">
-        <div class="d-flex flex-row align-items-center justify-content-around">
-            <div class="d-flex flex-column align-items-center">   
-                <h1>Start that workflow!</h1>
-                Click the button to start the wizard.
-            </div>
-            <button class="btn btn-primary" @onclick="StartWizard">Begin!</button>
+<MainBox>
+    <div class="d-flex flex-row align-items-center justify-content-around">
+        <div class="d-flex flex-column align-items-center">   
+            <h1>Start that workflow!</h1>
+            Click the button to start the wizard.
         </div>
+        <button class="btn btn-primary" @onclick="StartWizard">Begin!</button>
     </div>
-</div>
+</MainBox>
 
 <style>
     .lifted-box {
