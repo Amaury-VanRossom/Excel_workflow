@@ -1,0 +1,20 @@
+﻿@page "/wizard/step/{step:int}"
+@using excel_workflow.Shared
+@layout MainBox
+@inherits WizardStepBase
+
+<PageTitle>Step @Step</PageTitle>
+
+<h2 class="position-relative text-decoration-underline">Step @Step</h2>
+<div class="d-flex flex-row align-items-center justify-content-around">
+</div>
+
+
+@code {
+    // Upload student.csv
+
+    protected override void OnInitialized()
+    {
+        EnsureValidStep();
+    }
+}

@@ -19,9 +19,15 @@ namespace excel_workflow.Services
         public int Step { get => _step; set => _step = value; }
         public bool[] StepCompleted { get => _stepCompleted; set => _stepCompleted = value; }
 
-        public void GoToNextStep()
+        public void ToggleStepDone(int step)
         {
-            Step++;
+            StepCompleted[step-1] = !StepCompleted[step-1];
+        }
+
+        public int CanAccessStep(int step)
+        {
+            int nextAccessibleStep = StepCompleted.TakeWhile(b => b).Count() + 1;
+            return step - nextAccessibleStep;
         }
     }
 }
