@@ -1,4 +1,5 @@
-﻿<InputSelect @bind-Value="@BindValue">
+﻿@using System.Linq.Expressions
+<InputSelect TValue="T" Value="Value" ValueChanged="ValueChanged" ValueExpression="ValueExpression">
     @foreach (var value in ValueSource)
     {
         string valueText = ToText(value);
@@ -9,12 +10,10 @@
 @typeparam T
 @typeparam E
 @code {
-    [Parameter]
-    public required T BindValue { get; set; }
-    [Parameter] 
-    public EventCallback<T> BindValueChanged { get; set; }
-    [Parameter]
-    public required IEnumerable<E> ValueSource { get; set; }
-    [Parameter]
-    public required Func<E, string> ToText { get; set; }
+    [Parameter] public required T Value { get; set; }
+    [Parameter] public EventCallback<T> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<T>> ValueExpression { get; set; } = default!;
+    [Parameter] public required IEnumerable<E> ValueSource { get; set; }
+    [Parameter] public required Func<E, string> ToText { get; set; }
 }
+

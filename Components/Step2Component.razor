@@ -1,6 +1,6 @@
 ﻿@inherits WizardStepBase
 
-<EditForm Model="@Wiz.WizardModel" OnValidSubmit="GoToNextStep">
+<EditForm Model="_context" OnValidSubmit="NextStep">
 
 <div class="container">
     <div class="row">
@@ -11,7 +11,7 @@
                 @if (OlodNames is not null)
                 {
                     <InputSelectComponent T="string" E="string" 
-                        @bind-BindValue="@Wiz.WizardModel.Olod"  
+                        @bind-Value="_context.olod"  
                         ValueSource="OlodNames.Order()" 
                         ToText="s => s"/>
                 }
@@ -23,7 +23,7 @@
         </div>
         <div class="col-7 flex-grow-1">
             <InputSelectComponent T="ExamType?" E="ExamType" 
-                @bind-BindValue="@Wiz.WizardModel.ExamType" 
+                @bind-Value="_context.examType" 
                 ValueSource="Enum.GetValues(typeof(ExamType)).Cast<ExamType>()" 
                 ToText="e => e.ToString()[0] + e.ToString()[1..].ToLower()" />
         </div>
@@ -34,7 +34,7 @@
         </div>
         <div class="col-7 flex-grow-1">
             <InputSelectComponent T="DistanceLearningClassroomType?" E="DistanceLearningClassroomType" 
-                @bind-BindValue="@Wiz.WizardModel.DistanceLearningClassroomType"
+                @bind-Value="_context.distanceLearningClassroomType"
                 ValueSource="Enum.GetValues(typeof(DistanceLearningClassroomType)).Cast<DistanceLearningClassroomType>()"
                 ToText="e => e.ToString()[0] + e.ToString()[1..].ToLower()"/>
         </div>
@@ -49,13 +49,36 @@
 </EditForm>
 @code {
     //Selecteer OLOD, Type examen & Lokaal TIAO/VC
+    public class Context
+    {
+        public string? olod;
+        public ExamType? examType;
+        public DistanceLearningClassroomType? distanceLearningClassroomType;
 
+        public Context()
+        {
+            olod = "Advanced Software Development I";
+            examType = ExamType.WRITTEN;
+            distanceLearningClassroomType = DistanceLearningClassroomType.Spread;
+        }
+
+    }
+
+    public required Context _context = new Context();
     public required IEnumerable<string> OlodNames;
 
     protected async override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         OlodNames = Wiz.WizardModel.Students.Values.SelectMany(s => s.Olods).Select(o => o.Name).ToHashSet();
+    }
+
+    private async Task NextStep()
+    {
+        Wiz.WizardModel.Olod = _context.olod;
+        Wiz.WizardModel.ExamType = _context.examType;
+        Wiz.WizardModel.DistanceLearningClassroomType = _context.distanceLearningClassroomType;
+        await GoToNextStep();
     }
 
 }
