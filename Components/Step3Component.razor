@@ -29,5 +29,12 @@
                 student.Measures = measure; 
             }
         }
+        var Measures = Enum.GetValues<Measure>()
+            .AsEnumerable()
+            .Where(e => !e.Equals(Measure.None) && Wiz.WizardModel.Students.Values.Any(s => s.Measures.HasFlag(e)));
+        foreach (var measure in Measures)
+        {
+            Wiz.WizardModel.MeasuresTaken[measure] = MeasureTaken.None;
+        }
     }
 }
