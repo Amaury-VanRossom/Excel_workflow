@@ -3,10 +3,22 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace excel_workflow.Models.Csv
 {
-    public class IOEMRow(string name, int number, Measure measure)
+    public class IOEMRow
     {
-        public string Name = name;
-        public int Number = number;
-        public Measure Measure = measure;
+        public string Name;
+        public int Number;
+        public Measure Measure;
+
+        public IOEMRow(string name, int number, Measure measure)
+        {
+            Name = name;
+            Number = number;
+            Measure = measure;
+        }
+
+        public IOEMRow() 
+        {
+            
+        }
     }
 }

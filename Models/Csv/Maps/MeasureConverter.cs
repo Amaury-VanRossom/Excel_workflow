@@ -8,36 +8,51 @@ namespace excel_workflow.Models.Csv.Maps
 {
     public class MeasureConverter : DefaultTypeConverter
     {
+        private static readonly Dictionary<string, Measure> _map = new()
+        {
+            ["Afzonderlijk examenlokaal"] = Measure.SeperateRoom,
+            ["Computer met compenserende software"] = Measure.Computer,
+            ["Digitaal cursusmateriaal"] = Measure.DigitalCursus,
+            ["Examen - alternatieve evaluatievorm"] = Measure.ExAlternateEvaluation,
+            ["Examen - mondeling overlopen van de antwoorden"] = Measure.ExOralReview,
+            ["Examen - plaats examenlokaal"] = Measure.ExSpecificSeat,
+            ["Extra tijd - mondeling"] = Measure.TimeOral,
+            ["Extra tijd - schriftelijke evaluatie (15 min)"] = Measure.TimeWritten,
+            ["Gewettigde afwezigheid - les met evaluatie (speciaal statuut)"] = Measure.LawfulAbscenceEvaluation,
+            ["Gewettigde afwezigheid (speciaal statuut)"] = Measure.LawfulAbscence,
+            ["Hulpmiddelen - oordopjes, niet-aangesloten koptelefoon"] = Measure.Deafening,
+            ["Leslokaal - plaats"] = Measure.LessonSpecificSeat,
+            ["Lokaal verlaten - statuut"] = Measure.LeaveClass,
+            ["Spelling - taal"] = Measure.SpellingLanguage,
+            ["Spelling en zinsconstructies (geen taal)"] = Measure.SpellingSentence,
+            ["Verplaatsen deadline taken"] = Measure.MoveDeadline,
+            ["Verplaatsen examen - binnen examenperiode"] = Measure.MoveExam,
+            ["Zinsconstructies (geen taal)"] = Measure.Sentence
+        };
+
         public override object? ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
         {
-            return (Measure) (text switch
-            {
-                "afzonderlijk examenlokaal" => 0b1,
-                "Computer met compenserende software" => 0b10,
-                "Digitaal cursusmateriaal" => 0b100,
-                "Examen - alternatieve evaluatievorm" => 0b1000,
-                "Examen - mondeling overlopen van de antwoorden" => 0b1_0000,
-                "Examen - plaats examenlokaal" => 0b10_0000,
-                "Extra tijd - mondeling" => 0b100_0000,
-                "Extra tijd -schriftelijke evaluatie(15 min)" => 0b1000_0000,
-                "Gewettigde afwezigheid - les met evaluatie (speciaal statuut)" => 0b1_0000_0000,
-                "Gewettigde afwezigheid(speciaal statuut)" => 0b10_0000_0000,
-                "Hulpmiddelen - oordopjes, niet - aangesloten koptelefoon" => 0b100_0000_0000,
-                "Leslokaal - plaats" => 0b1000_0000_0000,
-                "Lokaal verlaten -statuut" => 0b1_0000_0000_0000,
-                "Spelling - taal" => 0b10_0000_0000_0000,
-                "Spelling en zinsconstructies(geen taal)" => 0b100_0000_0000_0000,
-                "Verplaatsen deadline taken" => 0b1000_0000_0000_0000,
-                "Verplaatsen examen - binnen examenperiode" => 0b1_0000_0000_0000_0000,
-                "Zinsconstructies(geen taal)" => 0b10_0000_0000_0000_0000,
-                _ => 0b0
-            });
+            if (string.IsNullOrWhiteSpace(text))
+                return Measure.None;
+
+            if (_map.TryGetValue(text, out var measure))
+                return measure;
+
+            throw new CsvHelper.TypeConversion.TypeConverterException(
+                this, memberMapData, text, row.Context,
+                $"Unknown measure keyword '{text}'");
         }
 
         public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
-            Measure measure = (Measure) (value ?? 0b0);
-            return measure.ToString(); //TODO: betere implementatie van Measure.ToString() maken (extension method??)
+            var measure = (Measure)(value ?? Measure.None);
+
+            // If multiple flags are set, join their keywords
+            var keywords = _map
+                .Where(kvp => measure.HasFlag(kvp.Value))
+                .Select(kvp => kvp.Key);
+
+            return string.Join(";", keywords);
         }
     }
 }

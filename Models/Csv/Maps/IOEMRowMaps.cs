@@ -7,7 +7,7 @@ namespace excel_workflow.Models.Csv.Maps
         public IOEMRowMaps() {
             Map(m => m.Name).Index(0);
             Map(m => m.Number).Index(1);
-            Map(m => m.Measure).Index(2).TypeConverter<MeasureConverter>();
+            Map(m => m.Measure).Index(3).TypeConverter<MeasureConverter>();
         }
     }
 }

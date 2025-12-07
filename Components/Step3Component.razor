@@ -1,0 +1,31 @@
+﻿@using excel_workflow.Models.Enums
+@inject CsvParsingService Csv
+@inject WizardState Wiz
+
+<FileUploadComponent T="Dictionary<int,Measure>"
+                     PText="Select the .csv file with all the IOEM information."
+                     H3Text="IOEM list"
+                     Parser="@ParseIOEM"
+                     AssignResult="@AssignMeasures"
+                     GoToNextStep="@GoToNextStep" />
+@code {
+    //IOEM.csv uploaden (misschien uploadopmaak in eigen component steken)
+    [Parameter]
+    public required EventCallback GoToNextStep { get; set; }
+
+    private async Task<Dictionary<int, Measure>> ParseIOEM(Stream stream)
+    {
+        return await Csv.ParseIOEM(stream).ToDictionaryAsync(t => t.Item1, t => t.Item2);
+    }
+
+    private void AssignMeasures(Dictionary<int, Measure> students)
+    {
+        foreach ((int number, Measure measure) in students)
+        {
+            if (Wiz.WizardModel.Students.TryGetValue(number, out var student))
+            {
+                student.Measures = measure; 
+            }
+        }
+    }
+}
