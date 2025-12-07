@@ -10,9 +10,9 @@
 @code {
     //IOEM.csv uploaden (misschien uploadopmaak in eigen component steken)
 
-    protected override void OnInitialized()
+    protected override Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        return base.OnInitializedAsync();
     }
 
     private async Task<Dictionary<int, Measure>> ParseIOEM(Stream stream)

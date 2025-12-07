@@ -1,6 +1,7 @@
 using excel_workflow.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Blazored.SessionStorage;
 
 namespace excel_workflow
 {
@@ -16,6 +17,7 @@ namespace excel_workflow
             builder.Services.AddScoped<WizardState>();
             builder.Services.AddScoped<CsvParsingService>();
             builder.Services.AddSingleton<ErrorService>();
+            builder.Services.AddBlazoredSessionStorage();
 
             await builder.Build().RunAsync();
         }

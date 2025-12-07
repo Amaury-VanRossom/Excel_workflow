@@ -8,12 +8,15 @@
             <p>Select the Olod for the exam list:</p>
         </div>
         <div class="col-7 flex-grow-1">
-            <InputSelect @bind-Value="@Wiz.WizardModel.Olod">
-                @foreach (var olod in OlodNames.Order())
-                    {
-                        <option value="@olod">@olod</option>
-                    }
-            </InputSelect>
+                @if (OlodNames is not null)
+                {
+                    <InputSelect @bind-Value="@Wiz.WizardModel.Olod">
+                        @foreach (var olod in OlodNames.Order())
+                        {
+                            <option value="@olod">@olod</option>
+                        }
+                    </InputSelect>
+                }
         </div>
     </div>
     <div class="row">
@@ -59,9 +62,9 @@
 
     public required IEnumerable<string> OlodNames;
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         OlodNames = Wiz.WizardModel.Students.Values.SelectMany(s => s.Olods).Select(o => o.Name).ToHashSet();
     }
 

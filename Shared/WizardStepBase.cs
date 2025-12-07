@@ -1,5 +1,7 @@
-﻿using excel_workflow.Services;
+﻿using Blazored.SessionStorage;
+using excel_workflow.Services;
 using Microsoft.AspNetCore.Components;
+using System.Threading.Tasks;
 
 namespace excel_workflow.Shared
 {
@@ -7,22 +9,30 @@ namespace excel_workflow.Shared
     {
         [Inject] public required WizardState Wiz { get; set; }
         [Inject] public required NavigationManager Nav { get; set; }
+        [Inject] public required ISessionStorageService Session { get; set; }
         [CascadingParameter] public required int Step { get; set; }
         protected override void OnInitialized()
         {
-            EnsureValidStep();
             base.OnInitialized();
+            Console.WriteLine($"Step: {Wiz.Step}");
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (!Wiz.IsHydrated)
+            {
+                await FetchStateFromSessionStorage();
+                Wiz.IsHydrated = true;
+            }
+            EnsureValidStep();
         }
         protected void EnsureValidStep()
         {
-            Console.WriteLine($"Step: {Wiz.Step}");
             Console.WriteLine($"Parameter: {Step}");
             int diff = Wiz.CanAccessStep(Step);
             if (diff != 0)
             {
-                int completedInOrder = Wiz.StepCompleted.TakeWhile(b => b).Count();
-                int nextAccessibleStep = completedInOrder + 1;
-                Nav.NavigateTo($"/wizard/step/{nextAccessibleStep}");
+                Nav.NavigateTo($"/wizard/step/{Step-diff}");
             }
             else
             {
@@ -30,9 +40,27 @@ namespace excel_workflow.Shared
             }
         }
 
-        protected void GoToNextStep()
+        private async Task FetchStateFromSessionStorage()
         {
-            Wiz.ToggleStepDone(Step);
+            var saved = await Session.GetItemAsync<WizardState>("wizard");
+
+            if (saved != null && saved.Step != Wiz.Step)
+            {
+                Wiz.Step = saved.Step;
+                Wiz.WizardModel.Olod = saved.WizardModel.Olod;
+                Wiz.WizardModel.ExamType = saved.WizardModel.ExamType;
+                Wiz.WizardModel.DistanceLearningClassroomType = saved.WizardModel.DistanceLearningClassroomType;
+                Wiz.WizardModel.MeasuresTaken = saved.WizardModel.MeasuresTaken;
+                Wiz.WizardModel.Students = saved.WizardModel.Students;
+                Wiz.WizardModel.Rooms = saved.WizardModel.Rooms;
+                Wiz.WizardModel.RoomChoices = saved.WizardModel.RoomChoices;
+            }
+        }
+
+        protected async Task GoToNextStep()
+        {
+            Wiz.ToggleStepDone();
+            await Session.SetItemAsync("wizard", Wiz);
             Nav.NavigateTo($"/wizard/step/{Step+1}");
         }
     }

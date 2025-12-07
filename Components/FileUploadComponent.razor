@@ -36,10 +36,10 @@
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
         CorrectCSVFile = false;
-        await ProcessStudentFile(e.File);
+        await ProcessFile(e.File);
     }
 
-    private async Task ProcessStudentFile(IBrowserFile file)
+    private async Task ProcessFile(IBrowserFile file)
     {
         try
         {

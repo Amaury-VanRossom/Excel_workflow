@@ -19,6 +19,7 @@ namespace excel_workflow.Models
 
         public string Name { get => _name; set => _name = value; }
         public bool Exemption { get => _exemption; set => _exemption = value; }
+        public Traject Traject { get => _traject; set => _traject = value; }
         public string Subgroup { get => _subgroup; set => _subgroup = value; }
 
         public override int GetHashCode()

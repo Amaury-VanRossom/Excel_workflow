@@ -10,9 +10,9 @@
                      GoToNextStep="GoToNextStep"/>
 
 @code {
-    protected override void OnInitialized()
+    protected override Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        return base.OnInitializedAsync();
     }
 
     private async Task<Dictionary<int, Student>> ParseStudents(Stream stream)
