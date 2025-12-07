@@ -1,0 +1,81 @@
+﻿@using excel_workflow.Models.Enums
+@inject CsvParsingService Csv
+@inject WizardState Wiz
+@inject ErrorService Err
+
+<EditForm Model="@Wiz.WizardModel" OnValidSubmit="GoToStep3">
+
+<div class="container">
+    <div class="row">
+        <div class="col-4 flex-grow-1 text-end">
+            <p>Select the Olod for the exam list:</p>
+        </div>
+        <div class="col-7 flex-grow-1">
+            <InputSelect @bind-Value="@Wiz.WizardModel.Olod">
+                @foreach (var olod in OlodNames.Order())
+                    {
+                        <option value="@olod">@olod</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4 flex-grow-1 text-end">
+            <p>Select the type of exam:</p>
+        </div>
+        <div class="col-7 flex-grow-1">
+            <InputSelect @bind-Value="@Wiz.WizardModel.ExamType">
+                @foreach (var type in Enum.GetValues(typeof(ExamType)))
+                    {
+                        string typeText = type.ToString() ?? "None";
+                        var text = typeText[0] + typeText.ToString()[1..].ToLower();
+                        <option value="@((ExamType) type)">@text</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4 flex-grow-1 text-end">
+            <p>What to do with TIAO/VC:</p>
+        </div>
+        <div class="col-7 flex-grow-1">
+            <InputSelect @bind-Value="@Wiz.WizardModel.DistanceLearningClassroomType">
+                @foreach (var type in Enum.GetValues(typeof(DistanceLearningClassroomType)))
+                    {
+                        string typeText = type.ToString() ?? "None";
+                        var text = typeText[0] + typeText.ToString()[1..].ToLower();
+                        <option value="@((ExamType) type)">@text</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-auto ">
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+</div>
+</EditForm>
+@code {
+    //Selecteer OLOD, Type examen & Lokaal TIAO/VC
+    [Parameter]
+    public required EventCallback GoToNextStep { get; set; }
+
+    public required IEnumerable<string> OlodNames;
+
+    protected override void OnInitialized()
+    {
+        OlodNames = Wiz.WizardModel.Students.Values.SelectMany(s => s.Olods).Select(o => o.Name).ToHashSet();
+    }
+
+    protected
+
+    private async Task GoToStep3()
+    {
+        if (GoToNextStep.HasDelegate)
+        {
+            await GoToNextStep.InvokeAsync();
+        }
+    }
+}
