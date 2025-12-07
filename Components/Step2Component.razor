@@ -1,9 +1,6 @@
-﻿@using excel_workflow.Models.Enums
-@inject CsvParsingService Csv
-@inject WizardState Wiz
-@inject ErrorService Err
+﻿@inherits WizardStepBase
 
-<EditForm Model="@Wiz.WizardModel" OnValidSubmit="GoToStep3">
+<EditForm Model="@Wiz.WizardModel" OnValidSubmit="GoToNextStep">
 
 <div class="container">
     <div class="row">
@@ -59,23 +56,13 @@
 </EditForm>
 @code {
     //Selecteer OLOD, Type examen & Lokaal TIAO/VC
-    [Parameter]
-    public required EventCallback GoToNextStep { get; set; }
 
     public required IEnumerable<string> OlodNames;
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         OlodNames = Wiz.WizardModel.Students.Values.SelectMany(s => s.Olods).Select(o => o.Name).ToHashSet();
     }
 
-    protected
-
-    private async Task GoToStep3()
-    {
-        if (GoToNextStep.HasDelegate)
-        {
-            await GoToNextStep.InvokeAsync();
-        }
-    }
 }

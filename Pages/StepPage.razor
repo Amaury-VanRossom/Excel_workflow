@@ -1,24 +1,25 @@
 ﻿@page "/wizard/step/{step:int}"
 @using excel_workflow.Shared
 @layout CenterLayout
-@inherits WizardStepBase
 
 <PageTitle>Step @Step</PageTitle>
 
 <h2 class="position-relative text-decoration-underline">Step @Step</h2>
+<CascadingValue Value="Step">
 <MainBox>
     @switch (Step)
     {
         case 1:
-            <Step1Component GoToNextStep="GoToNextStep"/>
+            <Step1Component />
             break;
         case 2:
-            <Step2Component GoToNextStep="GoToNextStep"/>
+            <Step2Component />
             break;
         case 3:
-            <Step3Component GoToNextStep="GoToNextStep"/>
+            <Step3Component />
             break;
         case 4:
+            <Step4Component />
             break;
         case 5:
             break;
@@ -30,13 +31,9 @@
             break;
     } 
 </MainBox>
-
+</CascadingValue>
 
 @code {
-    // Upload student.csv
-
-    protected override void OnInitialized()
-    {
-        EnsureValidStep();
-    }
+    [Parameter]
+    public required int Step { get; set; }
 }

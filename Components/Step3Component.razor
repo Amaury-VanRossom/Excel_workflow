@@ -1,17 +1,19 @@
-﻿@using excel_workflow.Models.Enums
+﻿@inherits WizardStepBase
 @inject CsvParsingService Csv
-@inject WizardState Wiz
 
 <FileUploadComponent T="Dictionary<int,Measure>"
                      PText="Select the .csv file with all the IOEM information."
                      H3Text="IOEM list"
-                     Parser="@ParseIOEM"
-                     AssignResult="@AssignMeasures"
-                     GoToNextStep="@GoToNextStep" />
+                     Parser="ParseIOEM"
+                     AssignResult="AssignMeasures"
+                     GoToNextStep="GoToNextStep" />
 @code {
     //IOEM.csv uploaden (misschien uploadopmaak in eigen component steken)
-    [Parameter]
-    public required EventCallback GoToNextStep { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     private async Task<Dictionary<int, Measure>> ParseIOEM(Stream stream)
     {

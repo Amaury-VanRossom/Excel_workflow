@@ -7,9 +7,16 @@ namespace excel_workflow.Shared
     {
         [Inject] public required WizardState Wiz { get; set; }
         [Inject] public required NavigationManager Nav { get; set; }
-        [Parameter] public int Step { get; set; }
+        [CascadingParameter] public required int Step { get; set; }
+        protected override void OnInitialized()
+        {
+            EnsureValidStep();
+            base.OnInitialized();
+        }
         protected void EnsureValidStep()
         {
+            Console.WriteLine($"Step: {Wiz.Step}");
+            Console.WriteLine($"Parameter: {Step}");
             int diff = Wiz.CanAccessStep(Step);
             if (diff != 0)
             {

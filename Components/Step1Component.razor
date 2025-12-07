@@ -1,17 +1,19 @@
 ﻿@inject CsvParsingService Csv
-@inject WizardState Wiz
+@inherits WizardStepBase
 @using Models
 
 <FileUploadComponent T="Dictionary<int,Student>" 
                      PText="Select the .csv file with all the students information." 
                      H3Text="Student list" 
-                     Parser="@ParseStudents"
-                     AssignResult="@AssignStudents"
-                     GoToNextStep="@GoToNextStep"/>
+                     Parser="ParseStudents"
+                     AssignResult="AssignStudents"
+                     GoToNextStep="GoToNextStep"/>
 
 @code {
-    [Parameter]
-    public required EventCallback GoToNextStep { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     private async Task<Dictionary<int, Student>> ParseStudents(Stream stream)
     {

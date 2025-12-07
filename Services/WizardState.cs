@@ -11,7 +11,7 @@ namespace excel_workflow.Services
         public WizardState()
         {
             _wizardModel = new WizardModel();
-            _step = 0;
+            _step = 1;
             _stepCompleted = new bool[12];
         }
 
@@ -21,7 +21,8 @@ namespace excel_workflow.Services
 
         public void ToggleStepDone(int step)
         {
-            StepCompleted[step-1] = !StepCompleted[step-1];
+            StepCompleted[step-1] = true;
+            Step++;
         }
 
         public int CanAccessStep(int step)
