@@ -43,13 +43,11 @@ namespace excel_workflow.Models.Csv.Maps
                 $"Unknown measure keyword '{text}'");
         }
 
-        public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
+        public string? ConvertToString(Measure value)
         {
-            var measure = (Measure)(value ?? Measure.None);
-
             // If multiple flags are set, join their keywords
             var keywords = _map
-                .Where(kvp => measure.HasFlag(kvp.Value))
+                .Where(kvp => value.HasFlag(kvp.Value))
                 .Select(kvp => kvp.Key);
 
             return string.Join(";", keywords);

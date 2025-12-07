@@ -1,0 +1,76 @@
+﻿@using excel_workflow.Models
+@using excel_workflow.Models.Csv.Maps
+@inject CsvParsingService Csv
+@inherits WizardStepBase
+
+<EditForm Model="MeasureViewModels" OnValidSubmit="NextStep">
+<div class="container">
+    @if (MeasureViewModels is not null)
+    {
+        @foreach (var measure in MeasureViewModels)
+        {
+        <div class="row">
+            <div class="col-7 flex-grow-1 text-end">
+                <p>@(_converter.ConvertToString(measure.Measure) ?? "None"):</p>
+            </div>
+            <div class="col-4 flex-grow-1">
+                    <InputSelectComponent T="MeasureTaken" E="MeasureTaken" 
+                                 @bind-Value="measure.Taken"
+                                 ValueSource="Enum.GetValues<MeasureTaken>()"
+                                 ToText="e => e.ToString()"/>
+            </div>
+        </div> 
+        }
+    }
+</div>
+</EditForm>
+
+@code {
+    //Voor elke Measure een MeasureTaken geven (Vanaf hier sidepanel maken met alle studenten van gekozen vak met IOEM maatregel)
+    private MeasureConverter _converter = new MeasureConverter();
+    public required IEnumerable<Measure> Measures;
+
+    public class MeasureViewModel
+    {
+        private readonly WizardModel _wizardModel;
+
+        public MeasureViewModel(WizardModel wizardModel, Measure measure)
+        {
+            _wizardModel = wizardModel;
+            Measure = measure;
+        }
+
+        public Measure Measure { get; }
+
+        public MeasureTaken Taken
+        {
+            get => _wizardModel.MeasuresTaken[Measure];
+            set => _wizardModel.MeasuresTaken[Measure] = value;
+        }
+    }
+
+    public List<MeasureViewModel> MeasureViewModels { get; set; } = new();
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Measures = Enum.GetValues<Measure>()
+            .AsEnumerable()
+            .Where(e => !e.Equals(Measure.None) && Wiz.WizardModel.Students.Values.Any(s => s.Measures.HasFlag(e)));
+
+        MeasureViewModels = Measures
+                .Select(m => new MeasureViewModel(Wiz.WizardModel, m))
+                .ToList();
+    }
+
+    private async Task NextStep()
+    {
+        await GoToNextStep();
+    }
+}
