@@ -1,0 +1,20 @@
+﻿<InputSelect @bind-Value="@BindValue">
+    @foreach (var value in ValueSource)
+    {
+        string valueText = ToText(value);
+        <option value="@value">@valueText</option>
+    }
+</InputSelect>
+
+@typeparam T
+@typeparam E
+@code {
+    [Parameter]
+    public required T BindValue { get; set; }
+    [Parameter] 
+    public EventCallback<T> BindValueChanged { get; set; }
+    [Parameter]
+    public required IEnumerable<E> ValueSource { get; set; }
+    [Parameter]
+    public required Func<E, string> ToText { get; set; }
+}

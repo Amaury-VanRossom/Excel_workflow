@@ -10,12 +10,10 @@
         <div class="col-7 flex-grow-1">
                 @if (OlodNames is not null)
                 {
-                    <InputSelect @bind-Value="@Wiz.WizardModel.Olod">
-                        @foreach (var olod in OlodNames.Order())
-                        {
-                            <option value="@olod">@olod</option>
-                        }
-                    </InputSelect>
+                    <InputSelectComponent T="string" E="string" 
+                        @bind-BindValue="@Wiz.WizardModel.Olod"  
+                        ValueSource="OlodNames.Order()" 
+                        ToText="s => s"/>
                 }
         </div>
     </div>
@@ -24,14 +22,10 @@
             <p>Select the type of exam:</p>
         </div>
         <div class="col-7 flex-grow-1">
-            <InputSelect @bind-Value="@Wiz.WizardModel.ExamType">
-                @foreach (var type in Enum.GetValues(typeof(ExamType)))
-                    {
-                        string typeText = type.ToString() ?? "None";
-                        var text = typeText[0] + typeText.ToString()[1..].ToLower();
-                        <option value="@((ExamType) type)">@text</option>
-                    }
-            </InputSelect>
+            <InputSelectComponent T="ExamType?" E="ExamType" 
+                @bind-BindValue="@Wiz.WizardModel.ExamType" 
+                ValueSource="Enum.GetValues(typeof(ExamType)).Cast<ExamType>()" 
+                ToText="e => e.ToString()[0] + e.ToString()[1..].ToLower()" />
         </div>
     </div>
     <div class="row">
@@ -39,14 +33,10 @@
             <p>What to do with TIAO/VC:</p>
         </div>
         <div class="col-7 flex-grow-1">
-            <InputSelect @bind-Value="@Wiz.WizardModel.DistanceLearningClassroomType">
-                @foreach (var type in Enum.GetValues(typeof(DistanceLearningClassroomType)))
-                    {
-                        string typeText = type.ToString() ?? "None";
-                        var text = typeText[0] + typeText.ToString()[1..].ToLower();
-                        <option value="@((ExamType) type)">@text</option>
-                    }
-            </InputSelect>
+            <InputSelectComponent T="DistanceLearningClassroomType?" E="DistanceLearningClassroomType" 
+                @bind-BindValue="@Wiz.WizardModel.DistanceLearningClassroomType"
+                ValueSource="Enum.GetValues(typeof(DistanceLearningClassroomType)).Cast<DistanceLearningClassroomType>()"
+                ToText="e => e.ToString()[0] + e.ToString()[1..].ToLower()"/>
         </div>
     </div>
 
