@@ -17,7 +17,8 @@
 
         public void ReportError(Exception ex, string userMessage = "An unexpected error occurred.")
         {
-            Console.WriteLine(ex); // log for debugging
+            //Console.WriteLine($"{ex.GetType().Name}: {ex.Message.Split('\n')[0]}");
+            Console.WriteLine(ex.ToString());
             ErrorMessage = userMessage;
         }
 

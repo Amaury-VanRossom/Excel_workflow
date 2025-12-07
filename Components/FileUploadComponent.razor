@@ -1,0 +1,65 @@
+﻿@inject ErrorService Err
+
+<div class="d-flex flex-column align-items-center justify-content-around">
+    <div class="d-flex flex-row align-items-center justify-content-around">
+        <div class="d-flex flex-column align-items-center">
+            <h3>@H3Text</h3>
+            <p class="w-50 text-center">@PText</p>
+        </div>
+        <div class="d-flex flex-column align-items-center gap-3">
+            <InputFile OnChange="OnInputFileChange" />
+            @if (!string.IsNullOrEmpty(Err.ErrorMessage))
+            {
+                <div class="alert alert-danger mb-0"> @Err.ErrorMessage </div>
+            }
+        </div>
+    </div>
+    <button class="btn btn-primary" disabled="@(!CorrectCSVFile)" @onclick="NextStep">Continue</button>
+</div>
+
+@typeparam T
+@code {
+    [Parameter]
+    public required EventCallback GoToNextStep { get; set; }
+
+    [Parameter]
+    public required string H3Text { get; set; }
+
+    [Parameter]
+    public required string PText { get; set; }
+
+    [Parameter] public Func<Stream, Task<T>> Parser { get; set; } = default!;
+    [Parameter] public Action<T> AssignResult { get; set; } = default!;
+
+    public bool CorrectCSVFile = false;
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        CorrectCSVFile = false;
+        await ProcessStudentFile(e.File);
+    }
+
+    private async Task ProcessStudentFile(IBrowserFile file)
+    {
+        try
+        {
+            Console.WriteLine($"Processing file: {file.Name}");
+            using Stream stream = file.OpenReadStream(10_000_000);
+            T result = await Parser(stream);
+            AssignResult(result);
+            Err.ClearError();
+            CorrectCSVFile = true;
+        }
+        catch (Exception ex)
+        {
+            Err.ReportError(ex, "This csv file does not contain the correct data.");
+        }
+    }
+    private async Task NextStep()
+    {
+        if (GoToNextStep.HasDelegate)
+        {
+            await GoToNextStep.InvokeAsync();
+        }
+    }
+}

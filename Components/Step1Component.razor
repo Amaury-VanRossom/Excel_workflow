@@ -1,56 +1,25 @@
 ﻿@inject CsvParsingService Csv
 @inject WizardState Wiz
-@inject ErrorService Err
+@using Models
 
-<div class="d-flex flex-column align-items-center justify-content-around">
-    <div class="d-flex flex-row align-items-center justify-content-around">
-        <div class="d-flex flex-column align-items-center">
-            <h3>Student list</h3>
-            <p class="w-50 text-center">Select the .csv file with all the students information.</p>
-        </div>
-        <div class="d-flex flex-column align-items-center gap-3">
-            <InputFile OnChange="OnInputFileChange" />
-            @if (!string.IsNullOrEmpty(Err.ErrorMessage))
-            {
-                <div class="alert alert-danger mb-0"> @Err.ErrorMessage </div>
-            }
-        </div>
-    </div>
-    <button class="btn btn-primary" disabled="@(!CorrectCSVFile)" @onclick="GoToStep2">Continue</button>
-</div>
+<FileUploadComponent T="Dictionary<int,Student>" 
+                     PText="Select the .csv file with all the students information." 
+                     H3Text="Student list" 
+                     Parser="@ParseStudents"
+                     AssignResult="@AssignStudents"
+                     GoToNextStep="@GoToNextStep"/>
+
 @code {
     [Parameter]
     public required EventCallback GoToNextStep { get; set; }
 
-    public bool CorrectCSVFile = false;
-
-    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    private async Task<Dictionary<int, Student>> ParseStudents(Stream stream)
     {
-        CorrectCSVFile = false;
-        await ProcessStudentFile(e.File);
+        return await Csv.ParseStudents(stream).ToDictionaryAsync(s => s.StudentNumber);
     }
 
-    private async Task ProcessStudentFile(IBrowserFile file)
+    private void AssignStudents(Dictionary<int, Student> students)
     {
-        try
-        {
-            Console.WriteLine($"Processing file: {file.Name}");
-            Stream stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
-            Wiz.WizardModel.Students = await Csv.ParseStudents(stream).ToDictionaryAsync(s => s.StudentNumber);
-            Err.ClearError();
-            CorrectCSVFile = true;
-        }
-        catch (Exception ex)
-        {
-            Err.ReportError(ex, "This csv file does not contain the correct data.");
-        }
-    }
-
-    private async Task GoToStep2()
-    {
-        if (GoToNextStep.HasDelegate)
-        {
-            await GoToNextStep.InvokeAsync();
-        }
+        Wiz.WizardModel.Students = students;
     }
 }
