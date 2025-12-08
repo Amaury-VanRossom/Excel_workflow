@@ -1,62 +1,58 @@
 ﻿@inherits WizardStepBase
 
 <EditForm Model="@Wiz.WizardModel.Rooms" OnValidSubmit="GoToNextStep">
-    <div class="container">
-        <div class="row">
-            <div class="col-1 flex-grow-1">
-                <p>Included?</p>
-            </div>
-            <div class="col-6 flex-grow-1">
-                <p>Name</p>
-            </div>
-            <div class="col-1 flex-grow-1">
-                <p>Capacity</p>
-            </div>
-            <div class="col-1 flex-grow-1">
-                <p>Max usage</p>
-            </div>
-            <div class="col-1 flex-grow-1">
-                <p>Real Capacity</p>
-            </div>
-            <div class="col-2 flex-grow-1">
-                <p>City</p>
-            </div>
-        </div>
-        @if (Wiz.WizardModel.Rooms.Count > 0)
-        {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Included?</th>
+                <th>Name</th>
+                <th>Capacity</th>
+                <th>Max usage</th>
+                <th>Real Capacity</th>
+                <th>City</th>
+                <th>Regular students?</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
             @foreach (var room in Wiz.WizardModel.Rooms)
             {
-                <div class="row">
-                    <div class="col-1 flex-grow-1">
-                        <InputCheckbox @bind-Value="room.Chosen"></InputCheckbox>
-                    </div>
-                    <div class="col-6 flex-grow-1">
-                        <p>@room.Name</p>
-                    </div>
-                    <div class="col-1 flex-grow-1">
-                        <p>@room.Capacity</p>
-                    </div>
-                    <div class="col-1 flex-grow-1">
-                        <p>@room.MaxUsage</p>
-                    </div>
-                    <div class="col-1 flex-grow-1">
-                        <p>@room.RealCapacity</p>
-                    </div>
-                    <div class="col-2 flex-grow-1">
-                        <p>@room.City</p>
-                    </div>
-                </div>
+                <tr>
+                    <td class="text-center"><InputCheckbox @bind-Value="room.Chosen" /></td>
+                    <td class="text-center">@room.Name</td>
+                    <td class="text-center">@room.Capacity</td>
+                    <td class="text-center">@((room.MaxUsage * 100).ToString() + "%")</td>
+                    <td class="text-center">@room.RealCapacity</td>
+                    <td class="text-center">@room.City</td>
+                    <td class="text-center"><InputCheckbox @bind-Value="room.OtherStudents" /></td>
+                    <td>
+                        @foreach (var option in _notes)
+                        {
+                            <div>
+                                <input type="checkbox"
+                                       checked="@room.ExamRoomNotes.HasFlag(option)"
+                                       @onchange="e => room.ToggleExamRoomNote(option, (bool)e.Value)" />
+                                <span>@option</span>
+                            </div>
+                        }
+                    </td>
+                </tr>
             }
-        }
-        <div class="row justify-content-center">
-            <div class="col-auto ">
-                <button type="submit" class="btn btn-primary">Continue</button>
-            </div>
+        </tbody>
+    </table>
+    <div class="row justify-content-center">
+        <div class="col-auto ">
+            <button type="submit" class="btn btn-primary">Continue</button>
         </div>
-
     </div>
 </EditForm>
 @code {
     //Lokalen kiezen (lijst met kruisjes zetten + notities plaatsen + yes/no voor extra studenten)
+    private IEnumerable<ExamRoomNotes>? _notes;
 
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _notes = Enum.GetValues<ExamRoomNotes>().Where(e => !e.Equals(ExamRoomNotes.None));
+    }
 }

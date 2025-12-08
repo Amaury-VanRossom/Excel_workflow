@@ -11,8 +11,9 @@ namespace excel_workflow.Models
         private City _city;
         private HashSet<string>? _overseers;
         private ExamRoomNotes _examRoomNotes;
+        private bool _otherStudents;
         private bool _chosen;
-        public ExamRoom(string name, int capacity, double maxUsage, int realCapacity, City city, HashSet<string>? overseers = null, ExamRoomNotes examRoomNotes = ExamRoomNotes.None, bool chosen = true)
+        public ExamRoom(string name, int capacity, double maxUsage, int realCapacity, City city, HashSet<string>? overseers = null, ExamRoomNotes examRoomNotes = ExamRoomNotes.None, bool otherStudents = true, bool chosen = true)
         {
             _name = name;
             _capacity = capacity;
@@ -21,6 +22,7 @@ namespace excel_workflow.Models
             _city = city;
             _overseers = overseers;
             _examRoomNotes = examRoomNotes;
+            _otherStudents = otherStudents;
             _chosen = chosen;
         }
 
@@ -32,5 +34,18 @@ namespace excel_workflow.Models
         public ExamRoomNotes ExamRoomNotes { get => _examRoomNotes; set => _examRoomNotes = value; }
         public bool Chosen { get => _chosen; set => _chosen = value; }
         public HashSet<string>? Overseers { get => _overseers; set => _overseers = value; }
+        public bool OtherStudents { get => _otherStudents; set => _otherStudents = value; }
+
+        public void ToggleExamRoomNote(ExamRoomNotes note, bool isChecked)
+        {
+            if (isChecked)
+            {
+                ExamRoomNotes |= note;
+            }
+            else
+            {
+                ExamRoomNotes &= ~note;
+            }
+        }
     }
 }
