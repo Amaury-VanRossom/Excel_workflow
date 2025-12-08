@@ -31,5 +31,6 @@ namespace excel_workflow.Models
         public City City { get => _city; set => _city = value; }
         public ExamRoomNotes ExamRoomNotes { get => _examRoomNotes; set => _examRoomNotes = value; }
         public bool Chosen { get => _chosen; set => _chosen = value; }
+        public HashSet<string>? Overseers { get => _overseers; set => _overseers = value; }
     }
 }

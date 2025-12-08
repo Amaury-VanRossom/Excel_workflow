@@ -22,7 +22,7 @@
             <p>Select the type of exam:</p>
         </div>
         <div class="col-7 flex-grow-1">
-            <InputSelectComponent T="ExamType?" E="ExamType" 
+            <InputSelectComponent T="ExamType" E="ExamType" 
                 @bind-Value="_context.examType" 
                 ValueSource="Enum.GetValues(typeof(ExamType)).Cast<ExamType>()" 
                 ToText="e => e.ToString()[0] + e.ToString()[1..].ToLower()" />
@@ -33,7 +33,7 @@
             <p>What to do with TIAO/VC:</p>
         </div>
         <div class="col-7 flex-grow-1">
-            <InputSelectComponent T="DistanceLearningClassroomType?" E="DistanceLearningClassroomType" 
+            <InputSelectComponent T="DistanceLearningClassroomType" E="DistanceLearningClassroomType" 
                 @bind-Value="_context.distanceLearningClassroomType"
                 ValueSource="Enum.GetValues(typeof(DistanceLearningClassroomType)).Cast<DistanceLearningClassroomType>()"
                 ToText="e => e.ToString()[0] + e.ToString()[1..].ToLower()"/>
@@ -51,9 +51,9 @@
     //Selecteer OLOD, Type examen & Lokaal TIAO/VC
     public class Context
     {
-        public string? olod;
-        public ExamType? examType;
-        public DistanceLearningClassroomType? distanceLearningClassroomType;
+        public string olod;
+        public ExamType examType;
+        public DistanceLearningClassroomType distanceLearningClassroomType;
 
         public Context()
         {
@@ -78,6 +78,7 @@
         Wiz.WizardModel.Olod = _context.olod;
         Wiz.WizardModel.ExamType = _context.examType;
         Wiz.WizardModel.DistanceLearningClassroomType = _context.distanceLearningClassroomType;
+        Wiz.WizardModel.RoomChoices = new Models.RoomChoices(_context.examType);
         await GoToNextStep();
     }
 
