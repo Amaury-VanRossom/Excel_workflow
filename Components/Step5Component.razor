@@ -1,0 +1,29 @@
+﻿@inject CsvParsingService Csv
+@inherits WizardStepBase
+@using Models
+
+<FileUploadComponent T="List<ExamRoom>"
+                     PText="Select the .csv file with all the examroom information."
+                     H3Text="Examroom list"
+                     Parser="ParseExamRooms"
+                     AssignResult="AssignRooms"
+                     GoToNextStep="GoToNextStep" />
+
+@code {
+    //Lokalen uploaden
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task<List<ExamRoom>> ParseExamRooms(Stream stream)
+    {
+        return await Csv.ParseExamRooms(stream).ToListAsync();
+    }
+
+    private void AssignRooms(List<ExamRoom> examRooms)
+    {
+        Wiz.WizardModel.Rooms = examRooms;
+    }
+
+}
