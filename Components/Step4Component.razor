@@ -3,25 +3,34 @@
 @inject CsvParsingService Csv
 @inherits WizardStepBase
 
-<EditForm Model="MeasureViewModels" OnValidSubmit="NextStep">
+<EditForm Model="@_context" OnValidSubmit="NextStep">
 <div class="container">
-    @if (MeasureViewModels is not null)
+    @if (_context is not null)
     {
-        @foreach (var measure in MeasureViewModels)
+        @foreach (var measure in _context)
         {
         <div class="row">
-            <div class="col-7 flex-grow-1 text-end">
+            <div class="col-8 flex-grow-1 text-end">
                 <p>@(_converter.ConvertToString(measure.Measure) ?? "None"):</p>
             </div>
-            <div class="col-4 flex-grow-1">
-                    <InputSelectComponent T="MeasureTaken" E="MeasureTaken" 
-                                 @bind-Value="measure.Taken"
-                                 ValueSource="Enum.GetValues<MeasureTaken>()"
-                                 ToText="e => e.ToString()"/>
+            <div class="col-3 flex-grow-1">
+                <InputSelect @bind-Value="measure.Taken" disabled="@measure.Taken.Equals(MeasureTaken.SB)">
+                    @foreach (var value in Enum.GetValues<MeasureTaken>())
+                    {
+                        string valueText = value.ToString() + (value.Equals(MeasureTaken.SB) ? "+" : "");
+                        <option value="@value" disabled="@value.Equals(MeasureTaken.SB)">@valueText</option>
+                    }
+                </InputSelect>
             </div>
         </div> 
         }
     }
+    <div class="row justify-content-center">
+        <div class="col-auto ">
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+
 </div>
 </EditForm>
 
@@ -30,11 +39,11 @@
     private MeasureConverter _converter = new MeasureConverter();
     public required IEnumerable<Measure> Measures;
 
-    public class MeasureViewModel
+    private class Context
     {
         private readonly WizardModel _wizardModel;
 
-        public MeasureViewModel(WizardModel wizardModel, Measure measure)
+        public Context(WizardModel wizardModel, Measure measure)
         {
             _wizardModel = wizardModel;
             Measure = measure;
@@ -49,8 +58,7 @@
         }
     }
 
-    public List<MeasureViewModel> MeasureViewModels { get; set; } = new();
-
+    private List<Context> _context { get; set; } = new();
 
     protected override void OnInitialized()
     {
@@ -64,8 +72,8 @@
             .AsEnumerable()
             .Where(e => !e.Equals(Measure.None) && Wiz.WizardModel.Students.Values.Any(s => s.Measures.HasFlag(e)));
 
-        MeasureViewModels = Measures
-                .Select(m => new MeasureViewModel(Wiz.WizardModel, m))
+        _context = Measures
+                .Select(m => new Context(Wiz.WizardModel, m))
                 .ToList();
     }
 
