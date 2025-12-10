@@ -15,7 +15,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var room in Wiz.WizardModel.Rooms)
+            @foreach (var room in Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.Equals(ExamRoomNotes.SB)))
             {
                 <tr>
                     <td class="text-center"><InputCheckbox @bind-Value="room.Chosen" /></td>
@@ -53,6 +53,6 @@
     protected async override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _notes = Enum.GetValues<ExamRoomNotes>().Where(e => !e.Equals(ExamRoomNotes.None));
+        _notes = Enum.GetValues<ExamRoomNotes>().Where(e => !e.Equals(ExamRoomNotes.None) || !e.Equals(ExamRoomNotes.SB));
     }
 }

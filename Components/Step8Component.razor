@@ -1,0 +1,30 @@
+﻿@inherits WizardStepBase
+@inject ErrorService Err
+@using Models
+
+<InputNumber TValue="double" @bind-Value="_gentPercentage" DisplayName="gent-percentage" type="range" min="0.00" max="1.00"/>
+<InputNumber TValue="double" @bind-Value="_aalstPercentage" DisplayName="aalst-percentage" type="range" min="0.00" max="1.00"/>
+
+<button @onclick="() => DivideStudents(City.Gent, _gentPercentage)">Generate Gent</button>
+<button @onclick="() => DivideStudents(City.Aalst, _aalstPercentage)">Generate Aalst</button>
+@code {
+    //Chosenrooms instellen
+    double _gentPercentage = 0.2;
+    double _aalstPercentage = 0.2;
+
+    List<Student> _gentStudents = new List<Student>();
+    List<Student> _aalstStudents = new List<Student>();
+
+    private void DivideStudents(City city, double percentage)
+    {
+        try
+        {
+            Wiz.AssignStudents(city, percentage);
+            Err.ClearError();
+        }
+        catch (InvalidOperationException e)
+        {
+            Err.ReportError(e, e.Message);
+        } 
+    }
+}

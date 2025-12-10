@@ -23,6 +23,7 @@
 
     private void AssignRooms(List<ExamRoom> examRooms)
     {
+        examRooms.Add(new ExamRoom("SB+", int.MaxValue, 1, int.MaxValue, City.Gent, null, ExamRoomNotes.SB, false, true));
         Wiz.WizardModel.Rooms = examRooms;
     }
 
