@@ -1,30 +1,83 @@
-﻿@inject CsvParsingService Csv
+﻿@using excel_workflow.Models
+@using excel_workflow.Models.Csv.Maps
 @inherits WizardStepBase
-@using Models
 
-<FileUploadComponent T="List<ExamRoom>"
-                     PText="Select the .csv file with all the examroom information."
-                     H3Text="Examroom list"
-                     Parser="ParseExamRooms"
-                     AssignResult="AssignRooms"
-                     GoToNextStep="GoToNextStep" />
+<EditForm Model="@_context" OnValidSubmit="NextStep">
+<div class="container">
+    @if (_context is not null)
+    {
+        @foreach (var measure in _context)
+        {
+        <div class="row">
+            <div class="col-8 flex-grow-1 text-end">
+                <p>@(_converter.ConvertToString(measure.Measure) ?? "None"):</p>
+            </div>
+            <div class="col-3 flex-grow-1">
+                <InputSelect @bind-Value="measure.Taken" disabled="@measure.Taken.Equals(MeasureTaken.SB)">
+                    @foreach (var value in Enum.GetValues<MeasureTaken>())
+                    {
+                        string valueText = value.ToString() + (value.Equals(MeasureTaken.SB) ? "+" : "");
+                        <option value="@value" disabled="@value.Equals(MeasureTaken.SB)">@valueText</option>
+                    }
+                </InputSelect>
+            </div>
+        </div> 
+        }
+    }
+    <div class="row justify-content-center">
+        <div class="col-auto ">
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+
+</div>
+</EditForm>
 
 @code {
-    //Lokalen uploaden
-    protected override Task OnInitializedAsync()
+    //Voor elke Measure een MeasureTaken geven (Vanaf hier sidepanel maken met alle studenten van gekozen vak met IOEM maatregel)
+    private MeasureConverter _converter = new MeasureConverter();
+    public required IEnumerable<Measure> Measures;
+
+    private class Context
     {
-        return base.OnInitializedAsync();
+        private readonly WizardModel _wizardModel;
+
+        public Context(WizardModel wizardModel, Measure measure)
+        {
+            _wizardModel = wizardModel;
+            Measure = measure;
+        }
+
+        public Measure Measure { get; }
+
+        public MeasureTaken Taken
+        {
+            get => _wizardModel.MeasuresTaken[Measure];
+            set => _wizardModel.MeasuresTaken[Measure] = value;
+        }
     }
 
-    private async Task<List<ExamRoom>> ParseExamRooms(Stream stream)
+    private List<Context> _context { get; set; } = new();
+
+    protected override void OnInitialized()
     {
-        return await Csv.ParseExamRooms(stream).ToListAsync();
+        base.OnInitialized();
     }
 
-    private void AssignRooms(List<ExamRoom> examRooms)
+    protected async override Task OnInitializedAsync()
     {
-        examRooms.Add(new ExamRoom("SB+", int.MaxValue, 1, int.MaxValue, City.Gent, null, ExamRoomNotes.SB, false, true));
-        Wiz.WizardModel.Rooms = examRooms;
+        await base.OnInitializedAsync();
+        Measures = Enum.GetValues<Measure>()
+            .AsEnumerable()
+            .Where(e => !e.Equals(Measure.None) && Wiz.WizardModel.Students.Values.Any(s => s.Measures.HasFlag(e)));
+
+        _context = Measures
+                .Select(m => new Context(Wiz.WizardModel, m))
+                .ToList();
     }
 
+    private async Task NextStep()
+    {
+        await GoToNextStep();
+    }
 }

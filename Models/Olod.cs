@@ -7,6 +7,7 @@ namespace excel_workflow.Models
         private string _name;
         private bool _exemption;
         private Traject _traject;
+        private City? _VCCity;
         private string _subgroup;
 
         public Olod(string name, bool exemption, Traject traject, string subgroup)
@@ -21,6 +22,7 @@ namespace excel_workflow.Models
         public bool Exemption { get => _exemption; set => _exemption = value; }
         public Traject Traject { get => _traject; set => _traject = value; }
         public string Subgroup { get => _subgroup; set => _subgroup = value; }
+        public City? VCCity { get => _VCCity; set => _VCCity = value; }
 
         public override int GetHashCode()
         {
