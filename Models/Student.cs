@@ -25,5 +25,15 @@ namespace excel_workflow.Models
         public HashSet<Olod> Olods { get => _olods; set => _olods = value; }
         public Measure Measures { get => _measures; set => _measures = value; }
         public ExamRoom? AssignedRoom { get => _assignedRoom; set => _assignedRoom = value; }
+
+        public bool isIOEM()
+        {
+            return Measures != 0b0;
+        }
+
+        public bool HasExtraTime(ExamType examType)
+        {
+            return examType.Equals(ExamType.WRITTEN) && Measures.HasFlag(Measure.TimeWritten);
+        }
     }
 }

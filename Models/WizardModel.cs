@@ -31,6 +31,27 @@ namespace excel_workflow.Models
             _assignedStudents = new Dictionary<Student, ExamRoom>();
         }
 
+        public IEnumerable<Student> GetStudentsFromCity(City city)
+        {
+            return Students.Values
+                .Where(s => {
+                    Olod? olod = s.Olods.First(o => o.Name == Olod);
+                    return olod is not null && !olod.Exemption && (city == City.Aalst 
+                    ? (olod.Traject.Equals(Traject.Aalst) || (olod.VCCity?.Equals(City.Aalst) ?? false)) 
+                    : (!olod.Traject.Equals(Traject.Aalst)) || (olod.VCCity?.Equals(City.Gent) ?? false));
+                });
+
+        }
+
+        public IEnumerable<(Student, Olod)> GetStudentsWithOlod(string olodName)
+        {
+            Console.WriteLine(olodName);
+            var values = Students.Values.Select(s => (s, s.Olods.FirstOrDefault(o => o.Name.Equals(olodName))))
+                .Where(t => t.Item2 is not null).Cast<(Student, Olod)>();
+            Console.WriteLine(values.Count());
+            return values;
+        }
+
         public bool NeedSeperateRoom(Student student)
         {
             foreach (var measure in Enum.GetValues<Measure>())
