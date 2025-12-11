@@ -50,10 +50,7 @@ namespace excel_workflow.Services
                 throw new InvalidOperationException($"There are no rooms available for {city}");
             }
 
-            var students = WizardModel.Students.Values
-                .Where(s => { Olod? olod = s.Olods.First(o => o.Name == WizardModel.Olod); 
-                return olod is not null && !olod.Exemption && (city == City.Aalst ? olod.Traject.Equals(Traject.Aalst) : !olod.Traject.Equals(Traject.Aalst)); });
-
+            var students = WizardModel.GetStudentsFromCity(city);
 
             // 1. Assign special students first
 

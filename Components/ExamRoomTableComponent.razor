@@ -1,0 +1,67 @@
+@inject WizardState Wiz
+@using Models
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Included?</th>
+            <th class="text-center">Name</th>
+            <th>Capacity</th>
+            <th>Max usage</th>
+            <th>Real Capacity</th>
+            @if (ShowUsedCapacity)
+            {
+            <th>Used Capacity</th>
+            <th>Current percentage used</th>
+            }
+            <th>City</th>
+            <th>Regular students?</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (_notes is not null && Rooms is not null)
+        {
+            @foreach (var room in Rooms)
+            {
+                <tr>
+                    <td class="text-center"><InputCheckbox @bind-Value="room.Chosen" /></td>
+                    <td class="text-center">@room.Name</td>
+                    <td class="text-center">@room.Capacity</td>
+                    <td class="text-center">@((room.MaxUsage * 100).ToString() + "%")</td>
+                    <td class="text-center">@room.RealCapacity</td>
+                    @if (ShowUsedCapacity)
+                    {
+                    <td class="text-center">@room.CurrentCapacityUsed</td>
+                    <td class="text-center">@(room.CurrentCapacityUsed/room.RealCapacity)%</td>
+                    }
+                    <td class="text-center">@room.City</td>
+                    <td class="text-center"><InputCheckbox @bind-Value="room.OtherStudents" /></td>
+                    <td>
+                        @foreach (var option in _notes)
+                        {
+                            <div>
+                                <input type="checkbox"
+                                       checked="@room.ExamRoomNotes.HasFlag(option)"
+                                       @onchange="e => room.ToggleExamRoomNote(option, (bool)e.Value)" />
+                                <span>@option</span>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code{
+    private IEnumerable<ExamRoomNotes>? _notes;
+    [Parameter] public IEnumerable<ExamRoom>? Rooms { get; set; }
+    [Parameter] public required bool ShowUsedCapacity { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _notes = Enum.GetValues<ExamRoomNotes>().Where(e => !(e.Equals(ExamRoomNotes.None) || e.HasFlag(ExamRoomNotes.SB)));
+    }
+}

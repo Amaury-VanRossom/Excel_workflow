@@ -54,6 +54,7 @@ namespace excel_workflow.Shared
                 Wiz.WizardModel.Students = saved.WizardModel.Students;
                 Wiz.WizardModel.Rooms = saved.WizardModel.Rooms;
                 Wiz.WizardModel.RoomChoices = saved.WizardModel.RoomChoices;
+                Wiz.WizardModel.AssignedStudents = saved.WizardModel.AssignedStudents;
             }
         }
 

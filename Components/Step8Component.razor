@@ -90,7 +90,7 @@
         await base.OnInitializedAsync();
         IEnumerable<ExamRoom> availableExamRooms = Wiz.WizardModel.Rooms.Where(r => r.Chosen);
         aalstRooms = availableExamRooms.Where(r => r.City == City.Aalst).Select(r => r.Name);
-        gentRooms = availableExamRooms.Where(r => r.City == City.Gent).Select(r => r.Name);
+        gentRooms = availableExamRooms.Where(r => r.City == City.Gent && !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB)).Select(r => r.Name);
         _context = new Context(gentRooms.First(), aalstRooms.First());
         Console.WriteLine($"{_context.gentSelectedRoom}");
     }

@@ -7,10 +7,10 @@
         @foreach (var (student, olod) in _VcStudents)
         {
             <div class="row">
-                <div class="col-8 flex-grow-1 text-end">
+                <div class="col-4 flex-grow-1 text-end">
                     <p>@student.Name:</p>
                 </div>
-                <div class="col-3 flex-grow-1">
+                <div class="col-auto flex-grow-1">
                     <InputSelectComponent T="City?" E="City?" @bind-Value="olod.VCCity" ValueSource="choices" ToText="@(o => o.HasValue ? o.Value.ToString() : "Online")" />
                 </div>
             </div>
@@ -31,8 +31,9 @@
     {
         await base.OnInitializedAsync();
 
-        _VcStudents = Wiz.WizardModel.Students.Values
-            .Select(student => (student, student.Olods.First(o => o.Name == Wiz.WizardModel.Olod)))
-            .Where(tuple => tuple.Item2 is not null).Cast<(Student,Olod)>();
+        _VcStudents =
+            Wiz.WizardModel
+                .GetStudentsWithOlod(Wiz.WizardModel.Olod ?? "")
+                .Where((t) => t.Item2.Traject.Equals(Traject.VC));
     }
 }

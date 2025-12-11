@@ -1,48 +1,7 @@
 ﻿@inherits WizardStepBase
 
 <EditForm Model="@Wiz.WizardModel.Rooms" OnValidSubmit="GoToNextStep">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Included?</th>
-                <th>Name</th>
-                <th>Capacity</th>
-                <th>Max usage</th>
-                <th>Real Capacity</th>
-                <th>City</th>
-                <th>Regular students?</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (_notes is not null)
-            {
-                @foreach (var room in Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.Equals(ExamRoomNotes.SB)))
-                {
-                    <tr>
-                        <td class="text-center"><InputCheckbox @bind-Value="room.Chosen" /></td>
-                        <td class="text-center">@room.Name</td>
-                        <td class="text-center">@room.Capacity</td>
-                        <td class="text-center">@((room.MaxUsage * 100).ToString() + "%")</td>
-                        <td class="text-center">@room.RealCapacity</td>
-                        <td class="text-center">@room.City</td>
-                        <td class="text-center"><InputCheckbox @bind-Value="room.OtherStudents" /></td>
-                        <td>
-                            @foreach (var option in _notes)
-                            {
-                                <div>
-                                    <input type="checkbox"
-                                           checked="@room.ExamRoomNotes.HasFlag(option)"
-                                           @onchange="e => room.ToggleExamRoomNote(option, (bool)e.Value)" />
-                                    <span>@option</span>
-                                </div>
-                            }
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
+    <ExamRoomTableComponent ShowUsedCapacity="false" Rooms="Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB))" />
     <div class="row justify-content-center">
         <div class="col-auto ">
             <button type="submit" class="btn btn-primary">Continue</button>
@@ -51,11 +10,9 @@
 </EditForm>
 @code {
     //Lokalen kiezen (lijst met kruisjes zetten + notities plaatsen + yes/no voor extra studenten)
-    private IEnumerable<ExamRoomNotes>? _notes;
 
     protected async override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _notes = Enum.GetValues<ExamRoomNotes>().Where(e => !e.Equals(ExamRoomNotes.None) || !e.Equals(ExamRoomNotes.SB));
     }
 }
