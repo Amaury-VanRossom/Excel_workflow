@@ -1,105 +1,54 @@
 ﻿@inherits WizardStepBase
+@inject ErrorService Err
 @using Models
 
-@if (_context is not null)
+<div class="d-flex flex-row justify-content-around">
+    <div class="d-flex justify-content-center flex-column">
+        <button @onclick="() => DivideStudents(City.Gent, _gentPercentage)">Generate Gent</button>
+        <InputNumber TValue="double" @bind-Value="_gentPercentage" DisplayName="gent-percentage" type="range" min="0.00" max="1.00"/>
+    </div>
+    <div class="d-flex justify-content-center flex-column">
+        <button @onclick="() => DivideStudents(City.Aalst, _aalstPercentage)">Generate Aalst</button>
+        <InputNumber TValue="double" @bind-Value="_aalstPercentage" DisplayName="aalst-percentage" type="range" min="0.00" max="1.00"/>
+    </div>
+</div>
+@if (Err.ErrorMessage is not null)
 {
-    <EditForm Model="_context" OnValidSubmit="NextStep">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col"></div>
-                <div class="col">Gent</div>
-                <div class="col">Aalst</div>
-            </div>
-            <div class="row flex-nowrap g-4 mb-2">
-                <div class="col-2">SB</div>
-                <div class="col-5">
-                    <InputSelect @bind-Value="Wiz.WizardModel.RoomChoices.SB" disabled="true">
-                            string valueText = value.ToString() + (value.Equals(MeasureTaken.SB) ? "+" : "");
-                            <option value="@Wiz.WizardModel.RoomChoices.SB" disabled="@true">@Wiz.WizardModel.RoomChoices.SB</option>
-                    </InputSelect>
-                </div>
-                <div class="col-5">
-                    <InputSelect @bind-Value="Wiz.WizardModel.RoomChoices.SB" disabled="true">
-                            string valueText = value.ToString() + (value.Equals(MeasureTaken.SB) ? "+" : "");
-                            <option value="@Wiz.WizardModel.RoomChoices.SB" disabled="@true">@Wiz.WizardModel.RoomChoices.SB</option>
-                    </InputSelect>
-                </div>
-            </div>
-            <div class="row flex-nowrap g-4 mb-2">
-                <div class="col-2">Seperated room</div>
-                <div class="col-5">
-                    <InputSelectComponent T="string" E="string" 
-                        @bind-Value="_context.gentSelectedRoom"
-                        ValueSource="gentRooms"
-                        ToText="r => r"/>
-                </div>
-                <div class="col-5">
-                    <InputSelectComponent T="string" E="string" 
-                        @bind-Value="_context.aalstSelectedRoom"
-                        ValueSource="aalstRooms"
-                        ToText="r => r"/>
-                </div>
-            </div> 
-            <div class="row flex-nowrap g-4 mb-2">
-                <div class="col-2">room for TIAO/VC</div>
-                <div class="col-5">
-                    <InputSelectComponent T="string" E="string" 
-                        @bind-Value="_context.gentTIAOVC"
-                        ValueSource="gentRooms"
-                        ToText="r => r"/>
-                </div>
-                <div class="col-5">
-                    <InputSelect @bind-Value="Wiz.WizardModel.RoomChoices.SB" disabled="true">
-                        string valueText = value.ToString() + (value.Equals(MeasureTaken.SB) ? "+" : "");
-                        <option value="@Wiz.WizardModel.RoomChoices.SB" disabled="@true">NVT</option>
-                    </InputSelect>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-auto ">
-                    <button type="submit" class="btn btn-primary">Continue</button>
-                </div>
-            </div>
-
-        </div>
-    </EditForm>
+   <p>@Err.ErrorMessage</p> 
 }
+<ExamRoomTableComponent ShowUsedCapacity="true" Rooms="Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB))"/>
+
+
+<div class="row justify-content-center">
+    <div class="col-auto ">
+        <button type="button" @onclick="GoToNextStep" class="btn btn-primary">Continue</button>
+    </div>
+</div>
+
 @code {
     //Chosenrooms instellen
+    double _gentPercentage = 0.2;
+    double _aalstPercentage = 0.2;
 
-    public IEnumerable<string> aalstRooms = [];
-    public IEnumerable<string> gentRooms = [];
-    private Context? _context = null;
+    List<Student> _gentStudents = new List<Student>();
+    List<Student> _aalstStudents = new List<Student>();
 
-    private class Context
+    private void DivideStudents(City city, double percentage)
     {
-        public string gentSelectedRoom;
-        public string aalstSelectedRoom;
-        public string gentTIAOVC;
-
-        public Context(string g1, string a1)
+        try
         {
-            gentSelectedRoom = g1;
-            aalstSelectedRoom = a1;
-            gentTIAOVC = g1;
+            Wiz.AssignStudents(city, percentage);
+            Err.ClearError();
+            StateHasChanged();
         }
+        catch (InvalidOperationException e)
+        {
+            Err.ReportError(e, e.Message);
+        } 
     }
 
     protected async override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        IEnumerable<ExamRoom> availableExamRooms = Wiz.WizardModel.Rooms.Where(r => r.Chosen);
-        aalstRooms = availableExamRooms.Where(r => r.City == City.Aalst).Select(r => r.Name);
-        gentRooms = availableExamRooms.Where(r => r.City == City.Gent && !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB)).Select(r => r.Name);
-        _context = new Context(gentRooms.First(), aalstRooms.First());
-        Console.WriteLine($"{_context.gentSelectedRoom}");
-    }
-
-    private async Task NextStep()
-    {
-        Wiz.WizardModel.RoomChoices.GentSelectedRoom = Wiz.WizardModel.Rooms.Find(r => r.Name.Equals(_context?.gentSelectedRoom));
-        Wiz.WizardModel.RoomChoices.AalstSelectedRoom = Wiz.WizardModel.Rooms.Find(r => r.Name.Equals(_context?.aalstSelectedRoom));
-        Wiz.WizardModel.RoomChoices.GentTIAOVC = Wiz.WizardModel.Rooms.Find(r => r.Name.Equals(_context?.gentTIAOVC));
-        await GoToNextStep();
     }
 }
