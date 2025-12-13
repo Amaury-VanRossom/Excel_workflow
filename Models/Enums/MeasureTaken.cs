@@ -4,6 +4,6 @@
     {
         None,
         SB,
-        SeperateRoom
+        SeperateRoom //For IOEM
     }
 }

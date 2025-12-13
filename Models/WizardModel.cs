@@ -35,7 +35,7 @@ namespace excel_workflow.Models
         {
             return Students.Values
                 .Where(s => {
-                    Olod? olod = s.Olods.First(o => o.Name == Olod);
+                    Olod? olod = s.Olods.FirstOrDefault(o => o.Name == Olod);
                     return olod is not null && !olod.Exemption && (city == City.Aalst 
                     ? (olod.Traject.Equals(Traject.Aalst) || (olod.VCCity?.Equals(City.Aalst) ?? false)) 
                     : (!olod.Traject.Equals(Traject.Aalst)) || (olod.VCCity?.Equals(City.Gent) ?? false));
@@ -52,28 +52,16 @@ namespace excel_workflow.Models
             return values;
         }
 
-        public bool NeedSeperateRoom(Student student)
+        public bool NeedRoom(Student student, MeasureTaken measureTaken)
         {
             foreach (var measure in Enum.GetValues<Measure>())
             {
-                if (student.Measures.HasFlag(measure) && MeasuresTaken[measure].Equals(MeasureTaken.SeperateRoom))
+                if (!measure.Equals(Measure.None) && student.Measures.HasFlag(measure) && MeasuresTaken[measure].Equals(measureTaken))
                 {
                     return true;
                 }
             }
             return false;
         }
-        public bool NeedSBRoom(Student student)
-        {
-            foreach (var measure in Enum.GetValues<Measure>())
-            {
-                if (student.Measures.HasFlag(measure) && MeasuresTaken[measure].Equals(MeasureTaken.SB))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
     }
 }

@@ -13,7 +13,13 @@
     </div>
 </div>
 <ExamRoomTableComponent ShowUsedCapacity="true" Rooms="Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB))"/>
-<button type="button" @onclick="GoToNextStep" class="btn btn-primary">Continue</button>
+
+
+<div class="row justify-content-center">
+    <div class="col-auto ">
+        <button type="button" @onclick="GoToNextStep" class="btn btn-primary">Continue</button>
+    </div>
+</div>
 
 @code {
     //Chosenrooms instellen
