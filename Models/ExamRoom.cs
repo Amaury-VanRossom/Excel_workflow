@@ -8,7 +8,6 @@ namespace excel_workflow.Models
         private int _capacity;
         private double _maxUsage;
         private int _realCapacity;
-        private int _currentCapacityUsed = 0;
         private City _city;
         private HashSet<string>? _overseers;
         private ExamRoomNotes _examRoomNotes;
@@ -36,7 +35,6 @@ namespace excel_workflow.Models
         public bool Chosen { get => _chosen; set => _chosen = value; }
         public HashSet<string>? Overseers { get => _overseers; set => _overseers = value; }
         public bool OtherStudents { get => _regularStudents; set => _regularStudents = value; }
-        public int CurrentCapacityUsed { get => _currentCapacityUsed; set => _currentCapacityUsed = value; }
 
         public void ToggleExamRoomNote(ExamRoomNotes note, bool isChecked)
         {
@@ -50,9 +48,9 @@ namespace excel_workflow.Models
             }
         }
 
-        public bool IsFull(double percentage)
+        public bool IsFull(int capacityUsed, double percentage)
         {
-            return (CurrentCapacityUsed / RealCapacity) < percentage;
+            return (capacityUsed / (double)RealCapacity) > percentage;
         }
     }
 }

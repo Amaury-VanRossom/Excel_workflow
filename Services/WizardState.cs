@@ -1,4 +1,5 @@
-﻿using excel_workflow.Extensions;
+﻿using excel_workflow.Exceptions;
+using excel_workflow.Extensions;
 using excel_workflow.Models;
 using excel_workflow.Models.Enums;
 
@@ -36,7 +37,7 @@ namespace excel_workflow.Services
             string message = string.Empty;
             // studenten vinden die vak volgen in city: var students = WizardModel.Students.Values.Where(s => s.Olods.(o => o.Name.Equals(WizardModel.Olod)));
             // Reset assignments
-            var students = WizardModel.Students.Values.GetStudentsWithOlod(WizardModel.Olod!).GetStudentsFromCity(city);
+            var students = WizardModel.Students.Values.GetStudentsWithOlod(WizardModel.Olod!).GetStudentsFromCity(city).ToList();
             foreach (var (s,_) in students)
             {
                 WizardModel.AssignedStudents.Remove(s);
@@ -44,12 +45,12 @@ namespace excel_workflow.Services
 
             // Get rooms for this city
             var cityRooms = WizardModel.Rooms
-                .Where(r => r.Chosen && r.City == city);
+                .Where(r => r.Chosen && r.City == city).ToList();
 
             if (!cityRooms.Any())
             {
                 // No rooms available
-                throw new InvalidOperationException($"There are no rooms available for {city}");
+                throw new ExamRoomAssignmentException($"There are no rooms available for {city}");
             }
 
             var SBRoom = WizardModel.Rooms.FirstOrDefault(r => r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB));
@@ -81,13 +82,14 @@ namespace excel_workflow.Services
             }
             if (amountOfIOEMStudentsThatDidNotGetRoom > 0)
             {
-                throw new InvalidOperationException($"{amountOfIOEMStudentsThatDidNotGetRoom} IOEM students did not get assigned a room because all seperate rooms are full.");
+                throw new ExamRoomAssignmentException($"{amountOfIOEMStudentsThatDidNotGetRoom} IOEM students did not get assigned a room because all seperate rooms are full.");
             }
 
             //TIAO/VC students
             if (WizardModel.DistanceLearningClassroomType.Equals(DistanceLearningClassroomType.Seperated))
             {
                 int amountOfTIAOStudentsThatDidNotGetRoom = 0;
+
                 var seperatedRooms = cityRooms.Where(r => r.ExamRoomNotes.HasFlag(ExamRoomNotes.TIAOVC));
                 foreach (var student in students.GetTIAOVCStudents().DiscardOlods())
                 {
@@ -104,7 +106,7 @@ namespace excel_workflow.Services
 
                 if (amountOfTIAOStudentsThatDidNotGetRoom > 0)
                 {
-                    throw new InvalidOperationException($"{amountOfTIAOStudentsThatDidNotGetRoom} TIAO students did not get assigned a room because all seperate rooms are full.");
+                    throw new ExamRoomAssignmentException($"{amountOfTIAOStudentsThatDidNotGetRoom} TIAO students did not get assigned a room because all seperate rooms are full.");
                 }
             }
 
@@ -113,7 +115,7 @@ namespace excel_workflow.Services
             {
                 if (!WizardModel.AssignedStudents.TryGetValue(student, out var examRoom) || examRoom is null)
                 {
-                    var room = cityRooms.First(r => !r.IsFull(percentage)) ?? throw new InvalidOperationException("All rooms are full, increase the limit or assign more rooms");
+                    var room = cityRooms.First(r => !r.IsFull(percentage) && r.OtherStudents) ?? throw new ExamRoomAssignmentException("All rooms are full, increase the limit or assign more rooms");
                     WizardModel.AssignedStudents.Add(student, room);
                     room.CurrentCapacityUsed++;
                 }

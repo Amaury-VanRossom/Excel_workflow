@@ -12,16 +12,14 @@ namespace excel_workflow.Extensions
                     Olod olod = t.Item2;
                     return olod is not null && !olod.Exemption && (city == City.Aalst 
                     ? (olod.Traject.Equals(Traject.Aalst) || (olod.VCCity?.Equals(City.Aalst) ?? false)) 
-                    : (olod.Traject.Equals(Traject.TI) || olod.Traject.Equals(Traject.TIAO)) || (olod.VCCity?.Equals(City.Gent) ?? false));
+                    : (olod.Traject.Equals(Traject.TI) || (olod.VCCity?.Equals(City.Gent) ?? false)));
                 });
         }
 
         public static IEnumerable<(Student, Olod)> GetStudentsWithOlod(this IEnumerable<Student> students, string olodName)
         {
-            Console.WriteLine(olodName);
             var values = students.Select(s => (s, s.Olods.FirstOrDefault(o => o.Name.Equals(olodName))))
-                .Where(t => t.Item2 is not null).Cast<(Student, Olod)>();
-            Console.WriteLine(values.Count());
+                .Where(t => t.Item2 is not null && !t.Item2.Exemption).Cast<(Student, Olod)>();
             return values;
         }
 

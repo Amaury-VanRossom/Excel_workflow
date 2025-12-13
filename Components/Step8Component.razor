@@ -6,10 +6,12 @@
     <div class="d-flex justify-content-center flex-column">
         <button @onclick="() => DivideStudents(City.Gent, _gentPercentage)">Generate Gent</button>
         <InputNumber TValue="double" @bind-Value="_gentPercentage" DisplayName="gent-percentage" type="range" min="0.00" max="1.00"/>
+        <span class="text-center">@($"{_gentPercentage * 100:F0}%")</span>
     </div>
     <div class="d-flex justify-content-center flex-column">
         <button @onclick="() => DivideStudents(City.Aalst, _aalstPercentage)">Generate Aalst</button>
         <InputNumber TValue="double" @bind-Value="_aalstPercentage" DisplayName="aalst-percentage" type="range" min="0.00" max="1.00"/>
+        <span class="text-center">@($"{_aalstPercentage * 100:F0}%")</span>
     </div>
      <button type="button" @onclick="SaveRoomChoices" class="btn btn-primary">Save room changes</button>
 </div>
@@ -42,10 +44,14 @@
             Err.ClearError();
             StateHasChanged();
         }
-        catch (InvalidOperationException e)
+        catch (ExamRoomAssignmentException e)
         {
             Err.ReportError(e, e.Message);
         } 
+        catch (Exception e)
+        {
+            Err.ReportError(e, e.Message);
+        }
     }
 
     protected async override Task OnInitializedAsync()
