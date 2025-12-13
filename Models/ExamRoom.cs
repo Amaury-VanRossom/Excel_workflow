@@ -49,5 +49,10 @@ namespace excel_workflow.Models
                 ExamRoomNotes &= ~note;
             }
         }
+
+        public bool IsFull(double percentage)
+        {
+            return (CurrentCapacityUsed / RealCapacity) < percentage;
+        }
     }
 }

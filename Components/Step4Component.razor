@@ -7,11 +7,14 @@
         @foreach (var (student, olod) in _VcStudents)
         {
             <div class="row">
-                <div class="col-4 flex-grow-1 text-end">
+                <div class="col-1 flex-grow-1 text-end">
+                    <p>@(olod.Traject.Equals(Traject.VC) ? "VC" : "TIAO")</p>
+                </div>
+                <div class="col-6 flex-grow-1 text-end">
                     <p>@student.Name:</p>
                 </div>
-                <div class="col-auto flex-grow-1">
-                    <InputSelectComponent T="City?" E="City?" @bind-Value="olod.VCCity" ValueSource="choices" ToText="@(o => o.HasValue ? o.Value.ToString() : "Online")" />
+                <div class="col-2 flex-grow-1">
+                    <InputSelectComponent T="City?" E="City?" @bind-Value="olod.VCCity" ValueSource="@(olod.Traject.Equals(Traject.VC) ? VCChoices : TIAOChoices)" ToText="@(o => o.HasValue ? o.Value.ToString() : "Online")" />
                 </div>
             </div>
         }
@@ -25,7 +28,8 @@
 
 @code {
     private IEnumerable<(Student, Olod)>? _VcStudents;
-    private City?[] choices = [null, City.Aalst, City.Gent];
+    private City?[] VCChoices = [null, City.Gent, City.Aalst];
+    private City?[] TIAOChoices = [City.Gent, City.Aalst];
 
     protected async override Task OnInitializedAsync()
     {

@@ -57,7 +57,7 @@ namespace excel_workflow.Services
             {
                 if (SBRoom is not null)
                 {
-                    student.AssignedRoom = SBRoom;
+                    WizardModel.AssignedStudents.Add(student, SBRoom);
                     SBRoom.CurrentCapacityUsed++;
                 }
             }
@@ -70,7 +70,7 @@ namespace excel_workflow.Services
                 var specialRoom = specialRooms.FirstOrDefault(r => !r.IsFull(percentage));
                 if (specialRoom is not null)
                 {
-                    student.AssignedRoom = specialRoom;
+                    WizardModel.AssignedStudents.Add(student, specialRoom);
                     specialRoom.CurrentCapacityUsed++;
                 }
                 else
@@ -94,7 +94,7 @@ namespace excel_workflow.Services
                     var seperatedRoom = seperatedRooms.FirstOrDefault(r => !r.IsFull(percentage));
                     if (seperatedRoom is not null)
                     {
-                        student.AssignedRoom = seperatedRoom; 
+                        WizardModel.AssignedStudents.Add(student, seperatedRoom);
                     }
                     else
                     {
@@ -109,11 +109,14 @@ namespace excel_workflow.Services
             }
 
             // 2. Assign remaining students
-            foreach (var student in students.DiscardOlods().HaveNoAssignedRoom())
+            foreach (var student in students.DiscardOlods())
             {
-                var room = cityRooms.First(r => !r.IsFull(percentage)) ?? throw new InvalidOperationException("All rooms are full, increase the limit or assign more rooms");
-                student.AssignedRoom = room;
-                room.CurrentCapacityUsed++;
+                if (!WizardModel.AssignedStudents.TryGetValue(student, out var examRoom) || examRoom is null)
+                {
+                    var room = cityRooms.First(r => !r.IsFull(percentage)) ?? throw new InvalidOperationException("All rooms are full, increase the limit or assign more rooms");
+                    WizardModel.AssignedStudents.Add(student, room);
+                    room.CurrentCapacityUsed++;
+                }
             }
         }
 

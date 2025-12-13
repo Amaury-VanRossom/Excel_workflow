@@ -34,11 +34,5 @@ namespace excel_workflow.Extensions
         {
             return students.Select(t => t.Item1);
         }
-
-        public static IEnumerable<Student> HaveNoAssignedRoom(this IEnumerable<Student> students)
-        {
-            return students.Where(s => s.AssignedRoom is null);
-        }
-
     }
 }

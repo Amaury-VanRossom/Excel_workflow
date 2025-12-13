@@ -9,7 +9,6 @@ namespace excel_workflow.Models
         private int _studentNumber;
         private HashSet<Olod> _olods;
         private Measure _measures;
-        private ExamRoom? _assignedRoom;
 
         public Student(string name, int studentNumber, HashSet<Olod>? olods)
         {
@@ -17,14 +16,12 @@ namespace excel_workflow.Models
             _studentNumber = studentNumber;
             _olods = olods ?? new HashSet<Olod>();
             _measures = 0b0;
-            _assignedRoom = null;
         }
 
         public string Name { get => _name; set => _name = value; }
         public int StudentNumber { get => _studentNumber; set => _studentNumber = value; }
         public HashSet<Olod> Olods { get => _olods; set => _olods = value; }
         public Measure Measures { get => _measures; set => _measures = value; }
-        public ExamRoom? AssignedRoom { get => _assignedRoom; set => _assignedRoom = value; }
 
         public bool isIOEM()
         {

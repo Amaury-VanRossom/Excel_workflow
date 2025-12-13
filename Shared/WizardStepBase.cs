@@ -57,10 +57,15 @@ namespace excel_workflow.Shared
             }
         }
 
+        public async Task SaveStateToSessionStorage()
+        {
+            await Session.SetItemAsync("wizard", Wiz);
+        }
+
         protected async Task GoToNextStep()
         {
             Wiz.ToggleStepDone();
-            await Session.SetItemAsync("wizard", Wiz);
+            await SaveStateToSessionStorage();
             Nav.NavigateTo($"/wizard/step/{Step+1}");
         }
     }
