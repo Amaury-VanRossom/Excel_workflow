@@ -13,7 +13,15 @@
         <InputNumber TValue="double" @bind-Value="_aalstPercentage" DisplayName="aalst-percentage" type="range" min="0.00" max="1.00"/>
         <span class="text-center">@($"{_aalstPercentage * 100:F0}%")</span>
     </div>
-     <button type="button mb-2" @onclick="SaveRoomChoices" class="btn btn-primary">Save room changes</button>
+    <div class="d-flex justify-content-around flex-column">
+        <button class="button" @onclick="() => _sortByStudentName = true">Sort by name</button>
+        <button class="button" @onclick="() => _sortByStudentName = false">Sort by classgroup</button>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-auto ">
+            <button type="button" @onclick="SaveRoomChoices" class="btn btn-primary">Save room changes</button>
+        </div>
+    </div>
 </div>
 @if (Err.ErrorMessage is not null)
 {
@@ -32,15 +40,17 @@
     //Chosenrooms instellen
     double _gentPercentage = 0.2;
     double _aalstPercentage = 0.2;
+    bool _sortByStudentName = true;
 
     List<Student> _gentStudents = new List<Student>();
     List<Student> _aalstStudents = new List<Student>();
+
 
     private void DivideStudents(City city, double percentage)
     {
         try
         {
-            Wiz.AssignStudents(city, percentage);
+            Wiz.AssignStudents(city, _sortByStudentName, percentage);
             Err.ClearError();
             StateHasChanged();
         }

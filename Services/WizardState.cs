@@ -32,12 +32,12 @@ namespace excel_workflow.Services
             return step - Step;
         }
 
-        public void AssignStudents(City city, double percentage)
+        public void AssignStudents(City city, bool sortByStudentName, double percentage)
         {
             string message = string.Empty;
             // studenten vinden die vak volgen in city: var students = WizardModel.Students.Values.Where(s => s.Olods.(o => o.Name.Equals(WizardModel.Olod)));
             // Reset assignments
-            var students = WizardModel.Students.Values.GetStudentsWithOlod(WizardModel.Olod!).GetStudentsFromCity(city).ToList();
+            var students = WizardModel.Students.Values.GetStudentsWithOlod(WizardModel.Olod!).GetStudentsFromCity(city).OrderBy(s => sortByStudentName ? s.Item1.Name : s.Item2.Subgroup).ToList();
             foreach (var (s,_) in students)
             {
                 WizardModel.AssignedStudents.Remove(s.StudentNumber);
