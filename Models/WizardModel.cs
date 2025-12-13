@@ -12,21 +12,21 @@ namespace excel_workflow.Models
         private Dictionary<int, Student> _students;
         private List<ExamRoom> _rooms;
         //lokaal kiezen voor Gent en Aalst voor "ander te selecteren lokaal" en TIAO/VC
-        private Dictionary<Student, ExamRoom> _assignedStudents;
+        private Dictionary<int, ExamRoom> _assignedStudents;
         public string? Olod { get => _olod; set => _olod = value; }
         public ExamType? ExamType { get => _examType; set => _examType = value; }
         public DistanceLearningClassroomType? DistanceLearningClassroomType { get => _distanceLearningClassroomType; set => _distanceLearningClassroomType = value; }
         public Dictionary<Measure, MeasureTaken> MeasuresTaken { get => _measuresTaken; set => _measuresTaken = value; }
         public Dictionary<int, Student> Students { get => _students; set => _students = value; }
         public List<ExamRoom> Rooms { get => _rooms; set => _rooms = value; }
-        public Dictionary<Student, ExamRoom> AssignedStudents { get => _assignedStudents; set => _assignedStudents = value; }
+        public Dictionary<int, ExamRoom> AssignedStudents { get => _assignedStudents; set => _assignedStudents = value; }
 
         public WizardModel()
         {
             _measuresTaken = new Dictionary<Measure, MeasureTaken>();
             _students = new Dictionary<int, Student>();
             _rooms = new List<ExamRoom>();
-            _assignedStudents = new Dictionary<Student, ExamRoom>();
+            _assignedStudents = new Dictionary<int, ExamRoom>();
         }
 
         public bool NeedRoom(Student student, MeasureTaken measureTaken)
@@ -39,6 +39,11 @@ namespace excel_workflow.Models
                 }
             }
             return false;
+        }
+
+        public int GetUsedCapacity(ExamRoom room)
+        {
+            return AssignedStudents.Values.Count(r => r.Name.Equals(room.Name));
         }
     }
 }

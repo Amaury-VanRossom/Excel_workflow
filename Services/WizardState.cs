@@ -40,7 +40,7 @@ namespace excel_workflow.Services
             var students = WizardModel.Students.Values.GetStudentsWithOlod(WizardModel.Olod!).GetStudentsFromCity(city).ToList();
             foreach (var (s,_) in students)
             {
-                WizardModel.AssignedStudents.Remove(s);
+                WizardModel.AssignedStudents.Remove(s.StudentNumber);
             }
 
             // Get rooms for this city
@@ -58,21 +58,19 @@ namespace excel_workflow.Services
             {
                 if (SBRoom is not null)
                 {
-                    WizardModel.AssignedStudents.Add(student, SBRoom);
-                    SBRoom.CurrentCapacityUsed++;
+                    WizardModel.AssignedStudents.Add(student.StudentNumber, SBRoom);
                 }
             }
 
             //IOEM seperated students
             var specialRooms = cityRooms.Where(r => r.ExamRoomNotes.HasFlag(ExamRoomNotes.IOEM));
             int amountOfIOEMStudentsThatDidNotGetRoom = 0;
-            foreach (var student in students.DiscardOlods().Where(s => WizardModel.NeedRoom(s, MeasureTaken.SeperateRoom)))
+            foreach (var student in students.DiscardOlods().Where(s => !WizardModel.AssignedStudents.ContainsKey(s.StudentNumber) && WizardModel.NeedRoom(s, MeasureTaken.SeperateRoom)))
             {
-                var specialRoom = specialRooms.FirstOrDefault(r => !r.IsFull(percentage));
+                var specialRoom = specialRooms.FirstOrDefault(r => !r.IsFull(WizardModel.GetUsedCapacity(r), percentage));
                 if (specialRoom is not null)
                 {
-                    WizardModel.AssignedStudents.Add(student, specialRoom);
-                    specialRoom.CurrentCapacityUsed++;
+                    WizardModel.AssignedStudents.Add(student.StudentNumber, specialRoom);
                 }
                 else
                 {
@@ -91,12 +89,12 @@ namespace excel_workflow.Services
                 int amountOfTIAOStudentsThatDidNotGetRoom = 0;
 
                 var seperatedRooms = cityRooms.Where(r => r.ExamRoomNotes.HasFlag(ExamRoomNotes.TIAOVC));
-                foreach (var student in students.GetTIAOVCStudents().DiscardOlods())
+                foreach (var student in students.GetTIAOVCStudents().DiscardOlods().Where(s => !WizardModel.AssignedStudents.ContainsKey(s.StudentNumber)))
                 {
-                    var seperatedRoom = seperatedRooms.FirstOrDefault(r => !r.IsFull(percentage));
+                    var seperatedRoom = seperatedRooms.FirstOrDefault(r => !r.IsFull(WizardModel.GetUsedCapacity(r), percentage));
                     if (seperatedRoom is not null)
                     {
-                        WizardModel.AssignedStudents.Add(student, seperatedRoom);
+                        WizardModel.AssignedStudents.Add(student.StudentNumber, seperatedRoom);
                     }
                     else
                     {
@@ -111,13 +109,12 @@ namespace excel_workflow.Services
             }
 
             // 2. Assign remaining students
-            foreach (var student in students.DiscardOlods())
+            foreach (var student in students.DiscardOlods().Where(s => !WizardModel.AssignedStudents.ContainsKey(s.StudentNumber)))
             {
-                if (!WizardModel.AssignedStudents.TryGetValue(student, out var examRoom) || examRoom is null)
+                if (!WizardModel.AssignedStudents.TryGetValue(student.StudentNumber, out var examRoom) || examRoom is null)
                 {
-                    var room = cityRooms.First(r => !r.IsFull(percentage) && r.OtherStudents) ?? throw new ExamRoomAssignmentException("All rooms are full, increase the limit or assign more rooms");
-                    WizardModel.AssignedStudents.Add(student, room);
-                    room.CurrentCapacityUsed++;
+                    var room = cityRooms.First(r => !r.IsFull(WizardModel.GetUsedCapacity(r), percentage) && r.OtherStudents) ?? throw new ExamRoomAssignmentException("All rooms are full, increase the limit or assign more rooms");
+                    WizardModel.AssignedStudents.Add(student.StudentNumber, room);
                 }
             }
         }

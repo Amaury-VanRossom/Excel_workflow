@@ -32,8 +32,8 @@
                     <td class="text-center">@room.RealCapacity</td>
                     @if (ShowUsedCapacity)
                     {
-                    var currentlyUsed = Wiz.WizardModel.AssignedStudents.Values.Count(r => r.Name.Equals(room.Name));
-                    double currentlyUsedPercentage = (currentlyUsed / (double) room.RealCapacity) * 100;
+                        var currentlyUsed = Wiz.WizardModel.GetUsedCapacity(room);
+                        double currentlyUsedPercentage = (currentlyUsed / (double) room.RealCapacity) * 100;
                     <td class="text-center">@currentlyUsed</td>
                     <td class="text-center">@(Math.Round(currentlyUsedPercentage,0,MidpointRounding.AwayFromZero))%</td>
                     }
