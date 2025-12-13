@@ -30,10 +30,6 @@
     protected async override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        _VcStudents =
-            Wiz.WizardModel
-                .GetStudentsWithOlod(Wiz.WizardModel.Olod ?? "")
-                .Where((t) => t.Item2.Traject.Equals(Traject.VC));
+        _VcStudents = Wiz.WizardModel.Students.Values.GetStudentsWithOlod(Wiz.WizardModel.Olod!).GetTIAOVCStudents();
     }
 }
