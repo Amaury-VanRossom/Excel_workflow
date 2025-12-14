@@ -30,7 +30,7 @@ namespace excel_workflow.Models
 
         public bool HasExtraTime(ExamType examType)
         {
-            return examType.Equals(ExamType.WRITTEN) && Measures.HasFlag(Measure.TimeWritten);
+            return examType.Equals(ExamType.SCHRIFTELIJK) && Measures.HasFlag(Measure.TimeWritten);
         }
     }
 }

@@ -2,14 +2,12 @@
 @inject CsvParsingService Csv
 
 <FileUploadComponent T="Dictionary<int,Measure>"
-                     PText="Select the .csv file with all the IOEM information."
-                     H3Text="IOEM list"
+                     PText="Selecteer het .csv bestand met alle IOEM maatregels."
+                     H3Text="IOEM lijst"
                      Parser="ParseIOEM"
                      AssignResult="AssignMeasures"
                      GoToNextStep="GoToNextStep" />
 @code {
-    //IOEM.csv uploaden (misschien uploadopmaak in eigen component steken)
-
     protected override Task OnInitializedAsync()
     {
         return base.OnInitializedAsync();
@@ -36,7 +34,7 @@
         {
             if (measure == Measure.DigitalCursus || measure == Measure.SeperateRoom)
             {
-                if (Wiz.WizardModel.ExamType == ExamType.WRITTEN)
+                if (Wiz.WizardModel.ExamType == ExamType.SCHRIFTELIJK)
                 {
                     Wiz.WizardModel.MeasuresTaken[measure] = MeasureTaken.SB;
                 }

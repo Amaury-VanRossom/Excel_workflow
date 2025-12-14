@@ -2,7 +2,7 @@
 @using excel_workflow.Models.Csv.Maps
 @inherits WizardStepBase
 
-<EditForm Model="@_context" OnValidSubmit="NextStep">
+<EditForm Model="@_context" OnValidSubmit="GoToNextStep">
 <div class="container">
     @if (_context is not null)
     {
@@ -34,7 +34,6 @@
 </EditForm>
 
 @code {
-    //Voor elke Measure een MeasureTaken geven (Vanaf hier sidepanel maken met alle studenten van gekozen vak met IOEM maatregel)
     private MeasureConverter _converter = new MeasureConverter();
     public required IEnumerable<Measure> Measures;
 
@@ -74,10 +73,5 @@
         _context = Measures
                 .Select(m => new Context(Wiz.WizardModel, m))
                 .ToList();
-    }
-
-    private async Task NextStep()
-    {
-        await GoToNextStep();
     }
 }

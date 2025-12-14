@@ -4,12 +4,12 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Examroom</th>
-            <th>Number</th>
-            <th>Name</th>
-            <th>Classgroup</th>
+            <th>Lokaal</th>
+            <th>Nummer</th>
+            <th>Naam</th>
+            <th>Groep</th>
             <th>IOEM?</th>
-            <th>Extra time?</th>
+            <th>Extra tijd?</th>
         </tr>
     </thead>
     <tbody>
@@ -18,8 +18,8 @@
             <tr>
                 <td class="text-center">@(room.Name ?? "No room")</td>
                 <td class="text-center">@student.StudentNumber</td>
-                <td class="text-center">@student.Name</td>
-                <td class="text-center">@olod.Subgroup</td>
+                <td>@student.Name</td>
+                <td>@olod.Subgroup</td>
                 <td class="text-center">@(student.isIOEM() ? "Yes" : "No")</td>
                 <td class="text-center">
                     @(Wiz.WizardModel.ExamType is ExamType et

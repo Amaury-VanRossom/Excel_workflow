@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col-4 flex-grow-1 text-end">
-            <p>Select the Olod for the exam list:</p>
+            <p>Selecteer het olod voor het examen:</p>
         </div>
         <div class="col-7 flex-grow-1">
                 @if (OlodNames is not null)
@@ -19,7 +19,7 @@
     </div>
     <div class="row">
         <div class="col-4 flex-grow-1 text-end">
-            <p>Select the type of exam:</p>
+            <p>Kies het examentype:</p>
         </div>
         <div class="col-7 flex-grow-1">
             <InputSelectComponent T="ExamType" E="ExamType" 
@@ -30,7 +30,7 @@
     </div>
     <div class="row">
         <div class="col-4 flex-grow-1 text-end">
-            <p>What to do with TIAO/VC:</p>
+            <p>Wat te doen met TIAO/VC:</p>
         </div>
         <div class="col-7 flex-grow-1">
             <InputSelectComponent T="DistanceLearningClassroomType" E="DistanceLearningClassroomType" 
@@ -42,13 +42,12 @@
 
     <div class="row justify-content-center">
         <div class="col-auto ">
-            <button type="submit" class="btn btn-primary">Continue</button>
+            <button type="submit" class="btn btn-primary">Verder</button>
         </div>
     </div>
 </div>
 </EditForm>
 @code {
-    //Selecteer OLOD, Type examen & Lokaal TIAO/VC
     public class Context
     {
         public string olod;
@@ -58,8 +57,8 @@
         public Context()
         {
             olod = "Advanced Software Development I";
-            examType = ExamType.WRITTEN;
-            distanceLearningClassroomType = DistanceLearningClassroomType.Spread;
+            examType = ExamType.SCHRIFTELIJK;
+            distanceLearningClassroomType = DistanceLearningClassroomType.Verspreid;
         }
 
     }

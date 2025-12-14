@@ -2,7 +2,7 @@
 {
     public enum DistanceLearningClassroomType
     {
-        Seperated,
-        Spread
+        Apart,
+        Verspreid
     }
 }

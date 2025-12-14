@@ -2,7 +2,7 @@
 {
     public enum ExamType
     {
-        WRITTEN,
+        SCHRIFTELIJK,
         COMPUTER
     }
 }

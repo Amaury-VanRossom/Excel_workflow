@@ -3,14 +3,13 @@
 @using Models
 
 <FileUploadComponent T="List<ExamRoom>"
-                     PText="Select the .csv file with all the examroom information."
-                     H3Text="Examroom list"
+                     PText="Selecteer het .csv bestand met alle lokalen."
+                     H3Text="Lokalen lijst"
                      Parser="ParseExamRooms"
                      AssignResult="AssignRooms"
                      GoToNextStep="GoToNextStep" />
 
 @code {
-    //Lokalen uploaden
     protected override Task OnInitializedAsync()
     {
         return base.OnInitializedAsync();
