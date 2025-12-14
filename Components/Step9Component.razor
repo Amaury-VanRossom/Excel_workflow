@@ -5,6 +5,9 @@
 @using Models
 @using excel_workflow.Models.Csv
 
+@if(gentInfo is not null && aalstInfo is not null)
+{
+    
 <div class="d-flex flex-row justify-content-evenly">
     <button @onclick="() => _showGentStudents = true">Gent</button>
     <button @onclick="DownloadCSV">Generate signature list as CSV</button>
@@ -22,6 +25,7 @@
 </div>
 
 <SignaturePrintTable entries="@((_showGentStudents ? gentInfo : aalstInfo).GetSignatureListRows(Wiz.WizardModel.ExamType).GroupBy(r => r.Lokaal))"/>
+}
 
 @code {
     public bool _showGentStudents = true;

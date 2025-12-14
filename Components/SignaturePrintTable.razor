@@ -1,0 +1,37 @@
+﻿@using excel_workflow.Models.Csv
+
+<div id="print-container">
+    @foreach (var (lokaal, rows) in entries.ToDictionary(g => g.Key, g => g.ToArray()))
+    {
+        <table class="table">
+            <caption class="table-title">@($"Handtekeningenlijst {lokaal}")</caption>
+            <thead>
+                <tr>
+                    <th class="align-middle">Naam</th>
+                    <th class="align-middle groep">Groep</th>
+                    <th class="align-middle text-center small-col">IOEM?</th>
+                    <th class="align-middle text-center small-col">Extra tijd?</th>
+                    <th class="align-middle handtekening text-center">Handtekening</th>
+                    <th class="align-middle text-center">Uur ingediend</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        <td>@row.Naam</td>
+                        <td class="groep">@row.Groep</td>
+                        <td class="small-col text-center">@row.IOEM</td>
+                        <td class="small-col text-center">@row.ExtraTijd</td>
+                        <td class="handtekening"></td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public IEnumerable<IGrouping<string,SignatureListRow>> entries { get; set; } = [];
+}

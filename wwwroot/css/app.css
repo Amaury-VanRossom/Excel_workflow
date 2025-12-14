@@ -112,3 +112,87 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+#print-container{
+    display: none;
+}
+
+@page {
+    size: landscape;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #print-container, #print-container * {
+        visibility: visible !important;
+    }
+
+    #print-container {
+        display: block;
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .table-title {
+        caption-side: top; /* standaard */
+        font-weight: bold;
+        font-size: 1.2rem;
+        /*padding: 0.5rem;*/
+        text-align: center;
+        border: 1px solid black;
+        border-bottom: none;
+        padding: 6px;
+        color: black;
+    }
+
+    #print-container table {
+        display: table !important;
+        page-break-before: always;
+        border: 1px solid black;
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+        font-size: 12px;
+    }
+
+    #print-container thead {
+        display: table-header-group !important;
+    }
+
+    #print-container tbody {
+        display: table-row-group !important;
+    }
+
+    #print-container tr {
+        display: table-row !important;
+    }
+
+    #print-container td,
+    #print-container th {
+        display: table-cell !important;
+        border: 1px solid black;
+        padding: 6px;
+    }
+
+    #print-container td.handtekening,
+    #print-container th.handtekening {
+        width: 30% !important;
+    }
+
+    #print-container th{
+        font-size: 1em;
+    }
+
+    .small-col{
+        width: 50px !important;
+    }
+
+    .groep{
+        width: 18%;
+    }
+}
