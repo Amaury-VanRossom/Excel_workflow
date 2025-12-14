@@ -51,6 +51,7 @@
         try
         {
             Wiz.AssignStudents(city, _sortByStudentName, percentage);
+            Wiz.WizardModel.CityStudentOrderingByName[city.Equals(City.Gent) ? 0 : 1] = _sortByStudentName;
             Err.ClearError();
             StateHasChanged();
         }

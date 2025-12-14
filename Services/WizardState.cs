@@ -45,7 +45,7 @@ namespace excel_workflow.Services
 
             // Get rooms for this city
             var cityRooms = WizardModel.Rooms
-                .Where(r => r.Chosen && r.City == city).ToList();
+                .Where(r => r.Chosen && r.City == city).OrderBy(r => r.Name).ToList();
 
             if (!cityRooms.Any())
             {

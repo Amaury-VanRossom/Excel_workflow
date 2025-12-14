@@ -1,0 +1,49 @@
+﻿@inherits WizardStepBase
+@inject ErrorService Err
+@inject CsvParsingService Csv
+@inject IJSRuntime JS
+@using Models
+@using excel_workflow.Models.Csv
+
+<div class="d-flex flex-row justify-content-evenly">
+    <button @onclick="() => _showGentStudents = true">Gent</button>
+    <button @onclick="DownloadCSV">Generate signature list as CSV</button>
+    <button @onclick="() => _showGentStudents = false">Aalst</button>
+</div>
+<div class="d-flex flex-column justify-content-center">
+    @(_showGentStudents ? @<StudentTableComponent city="City.Gent" assignedRooms="GetStudentsFromCity(City.Gent)"/>
+                        : @<StudentTableComponent city="City.Aalst" assignedRooms="GetStudentsFromCity(City.Aalst)"/>)
+</div>
+<div class="row justify-content-center">
+    <div class="col-auto ">
+        <button type="button" @onclick="GoToNextStep" class="btn btn-primary">Continue</button>
+    </div>
+</div>
+
+@code {
+    public bool _showGentStudents = true;
+    //Tabel studenten afprinten als pdf
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private IEnumerable<(Student, ExamRoom)> GetStudentsFromCity(City city)
+    {
+        return Wiz.WizardModel.AssignedStudents.Where(t => t.Value.City.Equals(city)).Select(t => (Wiz.WizardModel.Students[t.Key], t.Value)); 
+    }
+
+    private async Task DownloadCSV()
+    {
+        var assignedStudentsAndRooms = GetStudentsFromCity(_showGentStudents ? City.Gent : City.Aalst);
+        var entries = assignedStudentsAndRooms.Select(t => t.Item1)
+            .GetStudentsWithOlod(Wiz.WizardModel.Olod!)
+            .Zip(assignedStudentsAndRooms.Select(t => t.Item2), (q, e) => (q.Item1, q.Item2, e))
+            .Select(((Student s,Olod o,ExamRoom e) t) => new SignatureListRow(t.s.Name, t.o.Subgroup, t.s.isIOEM(), t.s.HasExtraTime(Wiz.WizardModel.ExamType ?? ExamType.COMPUTER), t.e.Name))
+            .OrderBy(r => r.Naam);
+        var bytes = Csv.GenerateSignatureZip(entries);
+
+        await JS.InvokeVoidAsync("downloadFile", "handtekeningenlijst.zip", "application/zip", bytes);
+    }
+}

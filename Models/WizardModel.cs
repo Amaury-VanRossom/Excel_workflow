@@ -13,6 +13,7 @@ namespace excel_workflow.Models
         private List<ExamRoom> _rooms;
         //lokaal kiezen voor Gent en Aalst voor "ander te selecteren lokaal" en TIAO/VC
         private Dictionary<int, ExamRoom> _assignedStudents;
+        private bool[] _cityStudentOrderingByName = [true, true];
         public string? Olod { get => _olod; set => _olod = value; }
         public ExamType? ExamType { get => _examType; set => _examType = value; }
         public DistanceLearningClassroomType? DistanceLearningClassroomType { get => _distanceLearningClassroomType; set => _distanceLearningClassroomType = value; }
@@ -20,6 +21,7 @@ namespace excel_workflow.Models
         public Dictionary<int, Student> Students { get => _students; set => _students = value; }
         public List<ExamRoom> Rooms { get => _rooms; set => _rooms = value; }
         public Dictionary<int, ExamRoom> AssignedStudents { get => _assignedStudents; set => _assignedStudents = value; }
+        public bool[] CityStudentOrderingByName { get => _cityStudentOrderingByName; set => _cityStudentOrderingByName = value; }
 
         public WizardModel()
         {

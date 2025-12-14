@@ -5,6 +5,7 @@ using excel_workflow.Models.Csv;
 using excel_workflow.Models.Csv.Maps;
 using excel_workflow.Models.Enums;
 using System.Globalization;
+using System.IO.Compression;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace excel_workflow.Services
@@ -18,6 +19,42 @@ namespace excel_workflow.Services
             csv.Context.RegisterClassMap<T>();
             return csv;
         }
+
+        private CsvWriter GetCsvWriter<T>(Stream stream) where T : ClassMap
+        {
+            var writer = new StreamWriter(stream, leaveOpen: true);
+            var csv = new CsvWriter(writer, CultureInfo.CurrentCulture);
+            csv.Context.RegisterClassMap<T>();
+            return csv;
+        }
+
+        public byte[] GenerateSignatureList(IEnumerable<SignatureListRow> entries)
+        {
+            using var memory = new MemoryStream();
+            using var csv = GetCsvWriter<SignatureListRowMap>(memory);
+            csv.WriteRecords(entries);
+            csv.Flush();
+
+            return memory.ToArray();
+        }
+        public byte[] GenerateSignatureZip(IEnumerable<SignatureListRow> entries)
+        {
+            using var memory = new MemoryStream();
+            using (var zip = new ZipArchive(memory, ZipArchiveMode.Create, leaveOpen: true))
+            {
+                foreach (var group in entries.GroupBy(e => e.Lokaal))
+                {
+                    var csvBytes = GenerateSignatureList(group);
+
+                    var entry = zip.CreateEntry($"{group.Key}.csv");
+                    using var entryStream = entry.Open();
+                    entryStream.Write(csvBytes, 0, csvBytes.Length);
+                }
+            }
+
+            return memory.ToArray();
+        }
+
         public async IAsyncEnumerable<Student> ParseStudents(Stream csvStream)
         {
             using var csv = GetCsvReader<StudentRowMaps>(csvStream);
