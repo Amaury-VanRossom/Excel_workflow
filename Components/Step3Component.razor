@@ -34,8 +34,21 @@
             .Where(e => !e.Equals(Measure.None) && Wiz.WizardModel.Students.Values.Any(s => s.Measures.HasFlag(e)));
         foreach (var measure in Measures)
         {
-            MeasureTaken taken = Wiz.WizardModel.ExamType == ExamType.WRITTEN && (measure == Measure.DigitalCursus || measure == Measure.SeperateRoom) ? MeasureTaken.SB : MeasureTaken.None;
-            Wiz.WizardModel.MeasuresTaken[measure] = taken;
+            if (measure == Measure.DigitalCursus || measure == Measure.SeperateRoom)
+            {
+                if (Wiz.WizardModel.ExamType == ExamType.WRITTEN)
+                {
+                    Wiz.WizardModel.MeasuresTaken[measure] = MeasureTaken.SB;
+                }
+                else
+                {
+                    Wiz.WizardModel.MeasuresTaken[measure] = MeasureTaken.SeperateRoom;
+                }
+            }
+            else 
+            {
+                    Wiz.WizardModel.MeasuresTaken[measure] = MeasureTaken.None;
+            }
         }
     }
 }

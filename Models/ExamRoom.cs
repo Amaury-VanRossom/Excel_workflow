@@ -13,7 +13,7 @@ namespace excel_workflow.Models
         private ExamRoomNotes _examRoomNotes;
         private bool _regularStudents;
         private bool _chosen;
-        public ExamRoom(string name, int capacity, double maxUsage, int realCapacity, City city, HashSet<string>? overseers = null, ExamRoomNotes examRoomNotes = ExamRoomNotes.None, bool otherStudents = true, bool chosen = true)
+        public ExamRoom(string name, int capacity, double maxUsage, int realCapacity, City city, HashSet<string>? overseers = null, ExamRoomNotes examRoomNotes = ExamRoomNotes.None, bool otherStudents = true, bool chosen = false)
         {
             _name = name;
             _capacity = capacity;

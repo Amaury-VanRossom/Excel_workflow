@@ -113,7 +113,7 @@ namespace excel_workflow.Services
             {
                 if (!WizardModel.AssignedStudents.TryGetValue(student.StudentNumber, out var examRoom) || examRoom is null)
                 {
-                    var room = cityRooms.First(r => !r.IsFull(WizardModel.GetUsedCapacity(r), percentage) && r.OtherStudents) ?? throw new ExamRoomAssignmentException("All rooms are full, increase the limit or assign more rooms");
+                    var room = cityRooms.FirstOrDefault(r => !r.IsFull(WizardModel.GetUsedCapacity(r), percentage) && r.OtherStudents) ?? throw new ExamRoomAssignmentException("All rooms are full, increase the limit or assign more rooms");
                     WizardModel.AssignedStudents.Add(student.StudentNumber, room);
                 }
             }

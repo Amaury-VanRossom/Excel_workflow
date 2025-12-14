@@ -40,6 +40,13 @@ namespace excel_workflow.Shared
             }
         }
 
+        protected async Task ResetWizard()
+        {
+            await Session.RemoveItemAsync("wizard");
+            Wiz = new WizardState();
+            Nav.NavigateTo("/", forceLoad: true);
+        }
+
         private async Task FetchStateFromSessionStorage()
         {
             var saved = await Session.GetItemAsync<WizardState>("wizard");
@@ -57,7 +64,7 @@ namespace excel_workflow.Shared
             }
         }
 
-        public async Task SaveStateToSessionStorage()
+        protected async Task SaveStateToSessionStorage()
         {
             await Session.SetItemAsync("wizard", Wiz);
         }

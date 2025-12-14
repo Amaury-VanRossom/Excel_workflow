@@ -27,7 +27,7 @@
 {
    <p>@Err.ErrorMessage</p> 
 }
-<ExamRoomTableComponent ShowUsedCapacity="true" Rooms="Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB))"/>
+<ExamRoomTableComponent ShowUsedCapacity="true" Rooms="Wiz.WizardModel.Rooms.Where(r => !r.ExamRoomNotes.HasFlag(ExamRoomNotes.SB)).OrderByDescending(r => r.Chosen).ThenBy(r => r.Name)"/>
 
 
 <div class="row justify-content-center">

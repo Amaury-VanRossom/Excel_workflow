@@ -7,6 +7,5 @@
         IOEM = 0b1,
         TIAOVC = 0b10,
         SB = 0b100,
-        Others = 0b1000
     }
 }
