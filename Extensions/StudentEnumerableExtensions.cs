@@ -1,4 +1,5 @@
 ﻿using excel_workflow.Models;
+using excel_workflow.Models.Csv;
 using excel_workflow.Models.Enums;
 
 namespace excel_workflow.Extensions
@@ -31,6 +32,18 @@ namespace excel_workflow.Extensions
         public static IEnumerable<Student> DiscardOlods(this IEnumerable<(Student, Olod)> students)
         {
             return students.Select(t => t.Item1);
+        }
+
+        public static IEnumerable<SignatureListRow> GetSignatureListRows(this IEnumerable<(Student, Olod, ExamRoom)> students, ExamType? examType) {
+            return students.Select(s =>
+                new SignatureListRow(s.Item1.Name, s.Item2.Subgroup, s.Item1.isIOEM(), s.Item1.HasExtraTime((ExamType)examType!), s.Item3.Name));
+        }
+        public static IEnumerable<(Student, Olod, ExamRoom)> GetStudentInfoFromCity(this Dictionary<int, Student> studentDict, Dictionary<int, ExamRoom> examRoomDict, City city, Func<IEnumerable<(Student, Olod, ExamRoom)>, IEnumerable<(Student, Olod, ExamRoom)>> sortingFunc, string olod)
+        {
+            var assignedRooms = examRoomDict.Where(t => t.Value.City.Equals(city)).Select(t => (studentDict[t.Key], t.Value));
+            return sortingFunc(assignedRooms.Select(t => t.Item1)
+                .GetStudentsWithOlod(olod)
+                .Zip(assignedRooms.Select(t => t.Item2), (q, e) => (q.Item1, q.Item2, e)));
         }
     }
 }

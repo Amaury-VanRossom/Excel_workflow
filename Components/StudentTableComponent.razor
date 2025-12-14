@@ -13,9 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var (student, olod, room) in _sortFunc(assignedRooms.Select(t => t.Item1)
-            .GetStudentsWithOlod(Wiz.WizardModel.Olod!)
-            .Zip(assignedRooms.Select(t => t.Item2), (q,e) => (q.Item1, q.Item2,e))))
+        @foreach (var (student, olod, room) in students)
         {
             <tr>
                 <td class="text-center">@(room.Name ?? "No room")</td>
@@ -34,25 +32,12 @@
 </table>
 
 @code{
-    [Parameter] public IEnumerable<(Student, ExamRoom)> assignedRooms { get; set; }
+    [Parameter] public IEnumerable<(Student,Olod, ExamRoom)> students { get; set; }
     [Parameter] public City city { get; set; }
-    public Func<IEnumerable<(Student, Olod, ExamRoom)>, IEnumerable<(Student, Olod, ExamRoom)>> _sortFunc = l => l;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        if (SortByCityAssignment(city))
-        {
-            _sortFunc = list => list.OrderBy(l => l.Item3.Name).ThenBy(l => l.Item1.Name);
-        }
-        else
-        {
-            _sortFunc = list => list.OrderBy(l => l.Item3.Name).ThenBy(l => l.Item2.Subgroup).ThenBy(l => l.Item1.Name);
-        }
     }  
 
-    private bool SortByCityAssignment(City city)
-    {
-        return Wiz.WizardModel.CityStudentOrderingByName[city.Equals(City.Gent) ? 0 : 1];
-    }
 } 

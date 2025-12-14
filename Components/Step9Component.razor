@@ -8,11 +8,12 @@
 <div class="d-flex flex-row justify-content-evenly">
     <button @onclick="() => _showGentStudents = true">Gent</button>
     <button @onclick="DownloadCSV">Generate signature list as CSV</button>
+    <button @onclick="DownloadPDF">Generate signature list as PDF</button>
     <button @onclick="() => _showGentStudents = false">Aalst</button>
 </div>
 <div class="d-flex flex-column justify-content-center">
-    @(_showGentStudents ? @<StudentTableComponent city="City.Gent" assignedRooms="GetStudentsFromCity(City.Gent)"/>
-                        : @<StudentTableComponent city="City.Aalst" assignedRooms="GetStudentsFromCity(City.Aalst)"/>)
+    @(_showGentStudents ? @<StudentTableComponent students="gentInfo"/>
+                        : @<StudentTableComponent students="aalstInfo"/>)
 </div>
 <div class="row justify-content-center">
     <div class="col-auto ">
@@ -20,30 +21,50 @@
     </div>
 </div>
 
+<SignaturePrintTable entries="@((_showGentStudents ? gentInfo : aalstInfo).GetSignatureListRows(Wiz.WizardModel.ExamType).GroupBy(r => r.Lokaal))"/>
+
 @code {
     public bool _showGentStudents = true;
+    public IEnumerable<(Student, Olod, ExamRoom)> gentInfo;
+    public IEnumerable<(Student, Olod, ExamRoom)> aalstInfo;
     //Tabel studenten afprinten als pdf
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
+        SetCityStudentInfo();
     }
 
-    private IEnumerable<(Student, ExamRoom)> GetStudentsFromCity(City city)
+    private void SetCityStudentInfo()
     {
-        return Wiz.WizardModel.AssignedStudents.Where(t => t.Value.City.Equals(city)).Select(t => (Wiz.WizardModel.Students[t.Key], t.Value)); 
+        gentInfo = Wiz.WizardModel.Students.GetStudentInfoFromCity(Wiz.WizardModel.AssignedStudents, City.Gent, GetSortingFunction(City.Gent), Wiz.WizardModel.Olod!);
+        aalstInfo = Wiz.WizardModel.Students.GetStudentInfoFromCity(Wiz.WizardModel.AssignedStudents, City.Aalst, GetSortingFunction(City.Aalst), Wiz.WizardModel.Olod!);
     }
 
     private async Task DownloadCSV()
     {
-        var assignedStudentsAndRooms = GetStudentsFromCity(_showGentStudents ? City.Gent : City.Aalst);
-        var entries = assignedStudentsAndRooms.Select(t => t.Item1)
-            .GetStudentsWithOlod(Wiz.WizardModel.Olod!)
-            .Zip(assignedStudentsAndRooms.Select(t => t.Item2), (q, e) => (q.Item1, q.Item2, e))
-            .Select(((Student s,Olod o,ExamRoom e) t) => new SignatureListRow(t.s.Name, t.o.Subgroup, t.s.isIOEM(), t.s.HasExtraTime(Wiz.WizardModel.ExamType ?? ExamType.COMPUTER), t.e.Name))
-            .OrderBy(r => r.Naam);
+        var assignedStudentsAndRooms = _showGentStudents ? gentInfo : aalstInfo;
+        var entries = assignedStudentsAndRooms.GetSignatureListRows(Wiz.WizardModel.ExamType!).OrderBy(r => r.Naam);
         var bytes = Csv.GenerateSignatureZip(entries);
 
         await JS.InvokeVoidAsync("downloadFile", "handtekeningenlijst.zip", "application/zip", bytes);
+    }
+
+    private async Task DownloadPDF()
+    {
+        await JS.InvokeVoidAsync("print");
+    }
+
+    private Func<IEnumerable<(Student, Olod, ExamRoom)>, IEnumerable<(Student, Olod, ExamRoom)>> GetSortingFunction(City city)
+    {
+        bool sorting =  Wiz.WizardModel.CityStudentOrderingByName[city.Equals(City.Gent) ? 0 : 1];
+        if (sorting)
+        {
+            return list => list.OrderBy(l => l.Item3.Name).ThenBy(l => l.Item1.Name);
+        }
+        else
+        {
+            return list => list.OrderBy(l => l.Item3.Name).ThenBy(l => l.Item2.Subgroup).ThenBy(l => l.Item1.Name);
+        }
     }
 }
