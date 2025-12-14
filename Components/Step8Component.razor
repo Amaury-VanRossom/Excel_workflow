@@ -14,8 +14,8 @@
         <span class="text-center">@($"{_aalstPercentage * 100:F0}%")</span>
     </div>
     <div class="d-flex justify-content-around flex-column">
-        <button class="button" @onclick="() => _sortByStudentName = true">Sort by name</button>
-        <button class="button" @onclick="() => _sortByStudentName = false">Sort by classgroup</button>
+        <button class="button" @onclick="() => _sortByStudentName = true">Assign by name</button>
+        <button class="button" @onclick="() => _sortByStudentName = false">Assign by classgroup</button>
     </div>
     <div class="row justify-content-center">
         <div class="col-auto ">
@@ -37,7 +37,7 @@
 </div>
 
 @code {
-    //Chosenrooms instellen
+    //Assign examrooms to students
     double _gentPercentage = 0.2;
     double _aalstPercentage = 0.2;
     bool _sortByStudentName = true;
